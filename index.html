@@ -77,7 +77,8 @@
                     <div id="episodesGrid" class="btn-grid"></div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="btn-nav active" style="flex:1; background: var(--red);" id="btnWatch" onclick="showPlayer()">▶ مشاهدة</button>
+                    <button class="btn-nav active" style="flex:1.5; background: var(--red);" id="btnWatch" onclick="showPlayer()">▶ مشاهدة</button>
+                    <button class="btn-nav" style="flex:1; background: var(--green); border-color: var(--green);" id="btnDownload" onclick="openDownload()">⬇️ تحميل</button>
                     <button class="btn-nav" id="favBtn" onclick="toggleFav()">❤️</button>
                 </div>
             </div>
@@ -103,6 +104,8 @@ function updateUI() {
     document.getElementById('mainHtml').dir = isAr ? 'rtl' : 'ltr';
     document.getElementById('langToggle').value = currentLang;
     document.getElementById('searchInput').placeholder = isAr ? "ابحث هنا..." : "Search...";
+    document.getElementById('btnWatch').innerText = isAr ? "▶ مشاهدة" : "▶ Watch Now";
+    document.getElementById('btnDownload').innerText = isAr ? "⬇️ تحميل" : "⬇️ Download";
 }
 
 window.onload = () => { updateUI(); loadMovies(); setupInfiniteScroll(); };
@@ -135,7 +138,6 @@ async function showDetails(item) {
     document.getElementById('modalDesc').innerText = item.overview || "...";
     document.getElementById('infoModal').style.display = 'block';
     
-    // Check Fav Status
     const isFav = watchlist.some(f => f.id === item.id);
     document.getElementById('favBtn').innerText = isFav ? "✅" : "❤️";
 
@@ -179,6 +181,11 @@ function selectE(num, el) {
     selectedE = num;
     document.querySelectorAll('#episodesGrid .btn-item').forEach(b => b.classList.remove('selected'));
     el.classList.add('selected');
+}
+
+function openDownload() {
+    const n = currentItem.title || currentItem.name;
+    window.open(`https://www.google.com/search?q=Download+${encodeURIComponent(n)}+4k+1080p`, '_blank');
 }
 
 function changeCategory(g, e) {

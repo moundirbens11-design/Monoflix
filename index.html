@@ -34,6 +34,7 @@
         .btn-item { background: #222; border: 1px solid #333; color: white; padding: 6px; border-radius: 5px; cursor: pointer; text-align: center; font-size: 11px; }
         .btn-item.selected { background: var(--red); border-color: var(--red); }
         #videoLayer { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; display:none; z-index:3000; flex-direction: column; }
+        .player-header { background: #111; padding: 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
         iframe { flex: 1; border: none; }
         .similar-section { padding: 20px; border-top: 1px solid #222; }
         .similar-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; }
@@ -94,7 +95,17 @@
     </div>
 </div>
 
-<div id="videoLayer"><span class="close-btn" onclick="closeModal('videoLayer')">✕</span><iframe id="mainIframe" allowfullscreen></iframe></div>
+<div id="videoLayer">
+    <div class="player-header">
+        <select id="serverSelect" class="lang-select" onchange="switchServer()">
+            <option value="vidsrc">Server 1 (VidSrc)</option>
+            <option value="vidsrc_cc">Server 2 (VidSrc.cc)</option>
+            <option value="embed_su">Server 3 (Embed.su)</option>
+        </select>
+        <span onclick="closeModal('videoLayer')" style="cursor:pointer; color:var(--red); font-weight:bold;">✕ إغلاق</span>
+    </div>
+    <iframe id="mainIframe" allowfullscreen></iframe>
+</div>
 
 <footer>Developed by <span style="color:var(--red); font-weight:bold;">Bensenouci Moundir</span> © 2026</footer>
 
@@ -106,7 +117,6 @@ let watchlist = JSON.parse(localStorage.getItem(_0xV[1])) || [];
 let currentItem = {}, currentPage = 1, currentGenre = _0xV[3], isFetching = false;
 let selectedS = 1, selectedE = 1;
 
-// مصفوفة الترجمات
 const translations = {
     'ar-SA': {
         '28': 'أكشن', '18': 'دراما', '35': 'كوميدي', '27': 'رعب', '16': 'أنيميشن',
@@ -121,16 +131,12 @@ const translations = {
 function updateUI() {
     const isAr = currentLang === _0xV[2];
     const langData = translations[currentLang];
-    
     document.getElementById('mainHtml').dir = isAr ? 'rtl' : 'ltr';
     document.getElementById('langToggle').value = currentLang;
-    
-    // ترجمة أزرار التنقل (الأقسام)
     document.querySelectorAll('.nav-bar .btn-nav[data-id]').forEach(btn => {
         const id = btn.getAttribute('data-id');
         if(id !== 'trending') btn.innerText = langData[id];
     });
-
     document.getElementById('searchInput').placeholder = langData['search'];
     document.getElementById('btnWatch').innerText = langData['watch'];
     document.getElementById('btnDownload').innerText = langData['download'];
@@ -166,14 +172,11 @@ async function showDetails(item) {
     document.getElementById('modalTitle').innerText = item.title || item.name;
     document.getElementById('modalDesc').innerText = item.overview || "...";
     document.getElementById('infoModal').style.display = 'block';
-    
     const isFav = watchlist.some(f => f.id === item.id);
     document.getElementById('favBtn').innerText = isFav ? "✅" : "❤️";
-
     if(!item.title) { 
         document.getElementById('tvSelectors').style.display = 'block'; 
-        loadSeasons(item.id); 
-        loadSimilar('tv', item.id);
+        loadSeasons(item.id); loadSimilar('tv', item.id);
     } else { 
         document.getElementById('tvSelectors').style.display = 'none'; 
         loadSimilar('movie', item.id);
@@ -189,6 +192,30 @@ async function loadSimilar(type, id) {
                 <img src="https://image.tmdb.org/t/p/w185${i.poster_path}">
             </div>`).join('');
     } catch(e) { document.getElementById('similarGrid').innerHTML = ''; }
+}
+
+function showPlayer() {
+    switchServer();
+    document.getElementById('videoLayer').style.display = 'flex';
+}
+
+function switchServer() {
+    const s = document.getElementById('serverSelect').value;
+    const t = currentItem.title ? 'movie' : 'tv';
+    let u = '';
+    
+    if (s === 'vidsrc') {
+        u = `https://vidsrc.me/embed/${t}?tmdb=${currentItem.id}`;
+        if(t === 'tv') u += `&season=${selectedS}&episode=${selectedE}`;
+    } else if (s === 'vidsrc_cc') {
+        u = `https://vidsrc.cc/v2/embed/${t}/${currentItem.id}`;
+        if(t === 'tv') u += `/${selectedS}/${selectedE}`;
+    } else if (s === 'embed_su') {
+        u = `https://embed.su/embed/${t}/${currentItem.id}`;
+        if(t === 'tv') u += `/${selectedS}/${selectedE}`;
+    }
+    
+    document.getElementById('mainIframe').src = u;
 }
 
 function toggleFav() {
@@ -245,14 +272,6 @@ function changeLanguage() {
     currentLang = document.getElementById('langToggle').value;
     localStorage.setItem('monoflix_lang', currentLang);
     updateUI(); currentPage = 1; loadMovies(false);
-}
-
-function showPlayer() {
-    const t = currentItem.title ? 'movie' : 'tv';
-    let u = `https://vidsrc.me/embed/${t}?tmdb=${currentItem.id}`;
-    if(t === 'tv') u += `&season=${selectedS}&episode=${selectedE}`;
-    document.getElementById('mainIframe').src = u;
-    document.getElementById('videoLayer').style.display = 'flex';
 }
 
 function closeModal(id) {

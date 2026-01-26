@@ -35,6 +35,10 @@
         .btn-item.selected { background: var(--red); border-color: var(--red); }
         #videoLayer { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; display:none; z-index:3000; flex-direction: column; }
         iframe { flex: 1; border: none; }
+        .similar-section { padding: 20px; border-top: 1px solid #222; }
+        .similar-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; }
+        .similar-card { min-width: 100px; cursor: pointer; }
+        .similar-card img { width: 100px; height: 150px; border-radius: 8px; object-fit: cover; }
         footer { padding: 25px; text-align: center; border-top: 1px solid #111; font-size: 14px; background: #080808; }
     </style>
 </head>
@@ -52,12 +56,12 @@
 </header>
 
 <div class="nav-bar" id="mainNav">
-    <div class="btn-nav active" onclick="changeCategory('trending', event)">🔥</div>
-    <div class="btn-nav" onclick="changeCategory(28, event)">Action</div>
-    <div class="btn-nav" onclick="changeCategory(18, event)">Drama</div>
-    <div class="btn-nav" onclick="changeCategory(35, event)">Comedy</div>
-    <div class="btn-nav" onclick="changeCategory(27, event)">Horror</div>
-    <div class="btn-nav" onclick="changeCategory(16, event)">Animation</div>
+    <div class="btn-nav active" data-id="trending" onclick="changeCategory('trending', event)">🔥</div>
+    <div class="btn-nav" data-id="28" onclick="changeCategory(28, event)">Action</div>
+    <div class="btn-nav" data-id="18" onclick="changeCategory(18, event)">Drama</div>
+    <div class="btn-nav" data-id="35" onclick="changeCategory(35, event)">Comedy</div>
+    <div class="btn-nav" data-id="27" onclick="changeCategory(27, event)">Horror</div>
+    <div class="btn-nav" data-id="16" onclick="changeCategory(16, event)">Animation</div>
     <div class="btn-nav" onclick="showFavs(event)">❤️</div>
 </div>
 
@@ -83,6 +87,10 @@
                 </div>
             </div>
         </div>
+        <div class="similar-section">
+            <h3 id="similarTitle" style="margin-bottom:10px; font-size:16px;">محتوى مشابه</h3>
+            <div id="similarGrid" class="similar-grid"></div>
+        </div>
     </div>
 </div>
 
@@ -91,7 +99,6 @@
 <footer>Developed by <span style="color:var(--red); font-weight:bold;">Bensenouci Moundir</span> © 2026</footer>
 
 <script>
-/* SECURITY & FAV SYSTEM */
 const _0xV = ['e8f20f569c1aff29a0ca4df4294d8f68', 'monoflix_fav', 'ar-SA', 'trending', 'watchlist'];
 const _0xkey = _0xV[0];
 let currentLang = localStorage.getItem('monoflix_lang') || _0xV[2];
@@ -99,13 +106,35 @@ let watchlist = JSON.parse(localStorage.getItem(_0xV[1])) || [];
 let currentItem = {}, currentPage = 1, currentGenre = _0xV[3], isFetching = false;
 let selectedS = 1, selectedE = 1;
 
+// مصفوفة الترجمات
+const translations = {
+    'ar-SA': {
+        '28': 'أكشن', '18': 'دراما', '35': 'كوميدي', '27': 'رعب', '16': 'أنيميشن',
+        'search': 'ابحث هنا...', 'watch': '▶ مشاهدة', 'download': '⬇️ تحميل', 'similar': 'محتوى مشابه'
+    },
+    'en-US': {
+        '28': 'Action', '18': 'Drama', '35': 'Comedy', '27': 'Horror', '16': 'Animation',
+        'search': 'Search...', 'watch': '▶ Watch Now', 'download': '⬇️ Download', 'similar': 'Similar Content'
+    }
+};
+
 function updateUI() {
     const isAr = currentLang === _0xV[2];
+    const langData = translations[currentLang];
+    
     document.getElementById('mainHtml').dir = isAr ? 'rtl' : 'ltr';
     document.getElementById('langToggle').value = currentLang;
-    document.getElementById('searchInput').placeholder = isAr ? "ابحث هنا..." : "Search...";
-    document.getElementById('btnWatch').innerText = isAr ? "▶ مشاهدة" : "▶ Watch Now";
-    document.getElementById('btnDownload').innerText = isAr ? "⬇️ تحميل" : "⬇️ Download";
+    
+    // ترجمة أزرار التنقل (الأقسام)
+    document.querySelectorAll('.nav-bar .btn-nav[data-id]').forEach(btn => {
+        const id = btn.getAttribute('data-id');
+        if(id !== 'trending') btn.innerText = langData[id];
+    });
+
+    document.getElementById('searchInput').placeholder = langData['search'];
+    document.getElementById('btnWatch').innerText = langData['watch'];
+    document.getElementById('btnDownload').innerText = langData['download'];
+    document.getElementById('similarTitle').innerText = langData['similar'];
 }
 
 window.onload = () => { updateUI(); loadMovies(); setupInfiniteScroll(); };
@@ -141,8 +170,25 @@ async function showDetails(item) {
     const isFav = watchlist.some(f => f.id === item.id);
     document.getElementById('favBtn').innerText = isFav ? "✅" : "❤️";
 
-    if(!item.title) { document.getElementById('tvSelectors').style.display = 'block'; loadSeasons(item.id); }
-    else { document.getElementById('tvSelectors').style.display = 'none'; }
+    if(!item.title) { 
+        document.getElementById('tvSelectors').style.display = 'block'; 
+        loadSeasons(item.id); 
+        loadSimilar('tv', item.id);
+    } else { 
+        document.getElementById('tvSelectors').style.display = 'none'; 
+        loadSimilar('movie', item.id);
+    }
+}
+
+async function loadSimilar(type, id) {
+    try {
+        const r = await fetch(`https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${_0xkey}&language=${currentLang}`);
+        const d = await r.json();
+        document.getElementById('similarGrid').innerHTML = d.results.filter(i=>i.poster_path).map(i => `
+            <div class="similar-card" onclick='showDetails(${JSON.stringify(i).replace(/'/g, "&apos;")})'>
+                <img src="https://image.tmdb.org/t/p/w185${i.poster_path}">
+            </div>`).join('');
+    } catch(e) { document.getElementById('similarGrid').innerHTML = ''; }
 }
 
 function toggleFav() {

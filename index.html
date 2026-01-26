@@ -22,16 +22,14 @@
         .btn-nav.active { background: var(--red); border-color: var(--red); }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 10px 5% 40px; }
         .card { cursor: pointer; border-radius: 10px; overflow: hidden; background: var(--dark-gray); transition: 0.3s; position: relative; border: 1px solid transparent; }
-        .card:hover { transform: translateY(-5px); border-color: var(--red); }
         .card img { width: 100%; height: 220px; object-fit: cover; }
         .card-info { padding: 8px; font-size: 11px; text-align: center; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); display:none; z-index:2000; overflow-y: auto; }
         .info-content { max-width: 800px; margin: 20px auto; background: #111; border-radius: 15px; overflow: hidden; border: 1px solid #222; position: relative; }
-        .close-btn { position: absolute; top: 15px; right: 15px; width: 35px; height: 35px; background: var(--red); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3001; font-weight: bold; }
+        .close-btn { position: absolute; top: 15px; right: 15px; width: 35px; height: 35px; background: var(--red); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3001; }
         .info-header { display: flex; gap: 20px; padding: 20px; flex-wrap: wrap; }
         .info-poster { width: 180px; border-radius: 10px; margin: 0 auto; }
         .info-details { flex: 1; min-width: 250px; }
-        .selector-label { font-size: 13px; color: var(--red); font-weight: bold; margin: 15px 0 5px; display: block; }
         .btn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap: 6px; max-height: 150px; overflow-y: auto; padding: 2px; }
         .btn-item { background: #222; border: 1px solid #333; color: white; padding: 6px; border-radius: 5px; cursor: pointer; text-align: center; font-size: 11px; }
         .btn-item.selected { background: var(--red); border-color: var(--red); }
@@ -60,8 +58,7 @@
     <div class="btn-nav" onclick="changeCategory(35, event)">Comedy</div>
     <div class="btn-nav" onclick="changeCategory(27, event)">Horror</div>
     <div class="btn-nav" onclick="changeCategory(16, event)">Animation</div>
-    <div class="btn-nav" onclick="changeCategory(878, event)">Sci-Fi</div>
-    <div class="btn-nav" onclick="showWatchlist(event)">❤️ Favorites</div>
+    <div class="btn-nav" onclick="showFavs(event)">❤️</div>
 </div>
 
 <div class="grid" id="mainGrid"></div>
@@ -75,16 +72,13 @@
             <div class="info-details">
                 <h2 id="modalTitle"></h2>
                 <p id="modalDesc" style="margin-top:10px; color:#bbb; font-size: 14px; line-height: 1.5;"></p>
-                <div id="tvSelectors" style="display:none;">
-                    <span class="selector-label" id="txtSeason">المواسم:</span>
-                    <div id="seasonsGrid" class="btn-grid"></div>
-                    <span class="selector-label" id="txtEpisode">الحلقات:</span>
+                <div id="tvSelectors" style="display:none; margin-top: 15px;">
+                    <div id="seasonsGrid" class="btn-grid"></div><br>
                     <div id="episodesGrid" class="btn-grid"></div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
                     <button class="btn-nav active" style="flex:1; background: var(--red);" id="btnWatch" onclick="showPlayer()">▶ مشاهدة</button>
-                    <button class="btn-nav" style="flex:1; background: var(--green); border-color: var(--green);" id="btnDownload" onclick="openDownload()">⬇️ تحميل</button>
-                    <button class="btn-nav" id="favBtn" onclick="toggleWatchlist()">❤️</button>
+                    <button class="btn-nav" id="favBtn" onclick="toggleFav()">❤️</button>
                 </div>
             </div>
         </div>
@@ -96,47 +90,39 @@
 <footer>Developed by <span style="color:var(--red); font-weight:bold;">Bensenouci Moundir</span> © 2026</footer>
 
 <script>
-/**
- * نُسخة محصنة ومشفرة - MONOFLIX SECURITY LAYER
- * تم تشفير المفتاح والعمليات الأساسية لمنع السرقة.
- */
-const _0x5a12=['e8f20f569c1aff29a0ca4df4294d8f68','target','value','trim','length','fetch','json','results','poster_path','title','name','id','some','push','splice','setItem','monoflix_fav','active','classList','remove','add','trending','watchlist','discover/movie','search/multi','language','query','page','trending/all/week'];
-const _0x4b31=function(_0x5a128e,_0x4b31c2){_0x5a128e=_0x5a128e-0x0;let _0x29f4b3=_0x5a12[_0x5a128e];return _0x29f4b3;};
-
-const _0xkey = _0x4b31(0x0);
-let currentLang = localStorage.getItem('monoflix_lang') || 'ar-SA';
-let currentItem = {}, watchlist = JSON.parse(localStorage.getItem(_0x4b31(0x10))) || [];
-let currentPage = 1, currentGenre = _0x4b31(0x15), isFetching = false;
+/* SECURITY & FAV SYSTEM */
+const _0xV = ['e8f20f569c1aff29a0ca4df4294d8f68', 'monoflix_fav', 'ar-SA', 'trending', 'watchlist'];
+const _0xkey = _0xV[0];
+let currentLang = localStorage.getItem('monoflix_lang') || _0xV[2];
+let watchlist = JSON.parse(localStorage.getItem(_0xV[1])) || [];
+let currentItem = {}, currentPage = 1, currentGenre = _0xV[3], isFetching = false;
 let selectedS = 1, selectedE = 1;
 
-function updateUIStrings() {
-    const isAr = currentLang === 'ar-SA';
+function updateUI() {
+    const isAr = currentLang === _0xV[2];
     document.getElementById('mainHtml').dir = isAr ? 'rtl' : 'ltr';
+    document.getElementById('langToggle').value = currentLang;
     document.getElementById('searchInput').placeholder = isAr ? "ابحث هنا..." : "Search...";
-    document.getElementById('btnWatch').innerText = isAr ? "▶ مشاهدة" : "▶ Watch Now";
-    document.getElementById('btnDownload').innerText = isAr ? "⬇️ تحميل" : "⬇️ Download";
 }
 
-window.onload = () => { updateUIStrings(); loadMovies(); setupInfiniteScroll(); };
+window.onload = () => { updateUI(); loadMovies(); setupInfiniteScroll(); };
 
 async function loadMovies(append = false) {
-    if (isFetching) return;
+    if (isFetching || currentGenre === _0xV[4]) return;
     isFetching = true;
-    let url = `https://api.themoviedb.org/3/${_0x4b31(0x1c)}?api_key=${_0xkey}&language=${currentLang}&page=${currentPage}`;
-    if(currentGenre !== _0x4b31(0x15) && currentGenre !== _0x4b31(0x16)) {
-        url = `https://api.themoviedb.org/3/${_0x4b31(0x17)}?api_key=${_0xkey}&with_genres=${currentGenre}&language=${currentLang}&page=${currentPage}`;
+    let url = `https://api.themoviedb.org/3/trending/all/week?api_key=${_0xkey}&language=${currentLang}&page=${currentPage}`;
+    if(currentGenre !== _0xV[3]) {
+        url = `https://api.themoviedb.org/3/discover/movie?api_key=${_0xkey}&with_genres=${currentGenre}&language=${currentLang}&page=${currentPage}`;
     }
-    if(currentGenre !== _0x4b31(0x16)) {
-        try { const r = await fetch(url); const d = await r.json(); render(d[_0x4b31(0x7)], append); } catch(e) {}
-    }
+    try { const r = await fetch(url); const d = await r.json(); render(d.results, append); } catch(e) {}
     isFetching = false;
 }
 
 function render(list, append = false) {
-    const html = list.filter(i=>i[_0x4b31(0x8)]).map(i => `
+    const html = list.filter(i=>i.poster_path).map(i => `
         <div class="card" onclick='showDetails(${JSON.stringify(i).replace(/'/g, "&apos;")})'>
-            <img src="https://image.tmdb.org/t/p/w342${i[_0x4b31(0x8)]}" loading="lazy">
-            <div class="card-info">${i[_0x4b31(0x9)] || i[_0x4b31(0xa)]}</div>
+            <img src="https://image.tmdb.org/t/p/w342${i.poster_path}" loading="lazy">
+            <div class="card-info">${i.title || i.name}</div>
         </div>`).join('');
     const grid = document.getElementById('mainGrid');
     grid.innerHTML = append ? grid.innerHTML + html : html;
@@ -144,30 +130,48 @@ function render(list, append = false) {
 
 async function showDetails(item) {
     currentItem = item;
-    document.getElementById('modalPoster').src = 'https://image.tmdb.org/t/p/w500' + item[_0x4b31(0x8)];
-    document.getElementById('modalTitle').innerText = item[_0x4b31(0x9)] || item[_0x4b31(0xa)];
+    document.getElementById('modalPoster').src = 'https://image.tmdb.org/t/p/w500' + item.poster_path;
+    document.getElementById('modalTitle').innerText = item.title || item.name;
     document.getElementById('modalDesc').innerText = item.overview || "...";
     document.getElementById('infoModal').style.display = 'block';
-    const isFav = watchlist[_0x4b31(0xc)](f => f[_0x4b31(0xb)] === item[_0x4b31(0xb)]);
+    
+    // Check Fav Status
+    const isFav = watchlist.some(f => f.id === item.id);
     document.getElementById('favBtn').innerText = isFav ? "✅" : "❤️";
-    if(!item[_0x4b31(0x9)]) { document.getElementById('tvSelectors').style.display = 'block'; loadSeasons(item[_0x4b31(0xb)]); }
+
+    if(!item.title) { document.getElementById('tvSelectors').style.display = 'block'; loadSeasons(item.id); }
     else { document.getElementById('tvSelectors').style.display = 'none'; }
+}
+
+function toggleFav() {
+    const idx = watchlist.findIndex(f => f.id === currentItem.id);
+    if(idx === -1) { watchlist.push(currentItem); document.getElementById('favBtn').innerText = "✅"; }
+    else { watchlist.splice(idx, 1); document.getElementById('favBtn').innerText = "❤️"; }
+    localStorage.setItem(_0xV[1], JSON.stringify(watchlist));
+    if(currentGenre === _0xV[4]) render(watchlist, false);
+}
+
+function showFavs(e) {
+    currentGenre = _0xV[4];
+    document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    render(watchlist, false);
 }
 
 async function loadSeasons(id) {
     const r = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${_0xkey}&language=${currentLang}`);
     const d = await r.json();
     document.getElementById('seasonsGrid').innerHTML = d.seasons.filter(s=>s.season_number > 0).map(s => `
-        <div class="btn-item ${s.season_number==1?'selected':''}" onclick="selectS(${s.season_number}, this)">${s.season_number}</div>`).join('');
+        <div class="btn-item ${s.season_number==1?'selected':''}" onclick="selectS(${s.season_number}, this)">S${s.season_number}</div>`).join('');
     selectS(1);
 }
 
 function selectS(num, el) {
     selectedS = num;
     if(el) { document.querySelectorAll('#seasonsGrid .btn-item').forEach(b => b.classList.remove('selected')); el.classList.add('selected'); }
-    fetch(`https://api.themoviedb.org/3/tv/${currentItem[_0x4b31(0xb)]}/season/${num}?api_key=${_0xkey}&language=${currentLang}`)
+    fetch(`https://api.themoviedb.org/3/tv/${currentItem.id}/season/${num}?api_key=${_0xkey}&language=${currentLang}`)
     .then(r=>r.json()).then(d => {
-        document.getElementById('episodesGrid').innerHTML = d.episodes.map(e => `<div class="btn-item ${e.episode_number==1?'selected':''}" onclick="selectE(${e.episode_number}, this)">${e.episode_number}</div>`).join('');
+        document.getElementById('episodesGrid').innerHTML = d.episodes.map(e => `<div class="btn-item ${e.episode_number==1?'selected':''}" onclick="selectE(${e.episode_number}, this)">E${e.episode_number}</div>`).join('');
     });
 }
 
@@ -177,44 +181,25 @@ function selectE(num, el) {
     el.classList.add('selected');
 }
 
-function toggleWatchlist() {
-    const idx = watchlist.findIndex(f => f[_0x4b31(0xb)] === currentItem[_0x4b31(0xb)]);
-    if(idx === -1) { watchlist[_0x4b31(0xd)](currentItem); document.getElementById('favBtn').innerText = "✅"; }
-    else { watchlist[_0x4b31(0xe)](idx, 1); document.getElementById('favBtn').innerText = "❤️"; }
-    localStorage[_0x4b31(0xf)](_0x4b31(0x10), JSON.stringify(watchlist));
-}
-
-function showWatchlist(e) {
-    currentGenre = _0x4b31(0x16);
-    document.querySelectorAll('.btn-nav').forEach(b => b.classList[_0x4b31(0x13)](_0x4b31(0x11)));
-    e[_0x4b31(0x1)].classList[_0x4b31(0x14)](_0x4b31(0x11));
-    render(watchlist, false);
-}
-
-function showPlayer() {
-    const t = currentItem[_0x4b31(0x9)] ? 'movie' : 'tv';
-    let u = `https://vidsrc.me/embed/${t}?tmdb=${currentItem[_0x4b31(0xb)]}`;
-    if(t === 'tv') u += `&season=${selectedS}&episode=${selectedE}`;
-    document.getElementById('mainIframe').src = u;
-    document.getElementById('videoLayer').style.display = 'flex';
-}
-
-function openDownload() {
-    const n = currentItem[_0x4b31(0x9)] || currentItem[_0x4b31(0xa)];
-    window.open(`https://www.google.com/search?q=Download+${encodeURIComponent(n)}`, '_blank');
-}
-
 function changeCategory(g, e) {
     currentGenre = g; currentPage = 1;
-    document.querySelectorAll('.btn-nav').forEach(b => b.classList[_0x4b31(0x13)](_0x4b31(0x11)));
-    if(e) e[_0x4b31(0x1)].classList[_0x4b31(0x14)](_0x4b31(0x11));
+    document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+    if(e) e.target.classList.add('active');
     loadMovies(); window.scrollTo(0,0);
 }
 
 function changeLanguage() {
     currentLang = document.getElementById('langToggle').value;
     localStorage.setItem('monoflix_lang', currentLang);
-    location.reload();
+    updateUI(); currentPage = 1; loadMovies(false);
+}
+
+function showPlayer() {
+    const t = currentItem.title ? 'movie' : 'tv';
+    let u = `https://vidsrc.me/embed/${t}?tmdb=${currentItem.id}`;
+    if(t === 'tv') u += `&season=${selectedS}&episode=${selectedE}`;
+    document.getElementById('mainIframe').src = u;
+    document.getElementById('videoLayer').style.display = 'flex';
 }
 
 function closeModal(id) {
@@ -224,23 +209,18 @@ function closeModal(id) {
 
 function setupInfiniteScroll() {
     const obs = new IntersectionObserver(ent => {
-        if(ent[0].isIntersecting && !isFetching && currentGenre !== _0x4b31(0x16)) { currentPage++; loadMovies(true); }
+        if(ent[0].isIntersecting && !isFetching && currentGenre !== _0xV[4]) { currentPage++; loadMovies(true); }
     });
     obs.observe(document.getElementById('sentinel'));
 }
 
-let sT;
-document.getElementById('searchInput').oninput = (e) => {
-    clearTimeout(sT); const q = e[_0x4b31(0x1)][_0x4b31(0x2)][_0x4b31(0x3)]();
-    if(q[_0x4b31(0x4)] === 0) { loadMovies(); return; }
-    if(q[_0x4b31(0x4)] < 3) return;
-    sT = setTimeout(async () => {
-        const r = await fetch(`https://api.themoviedb.org/3/${_0x4b31(0x18)}?api_key=${_0xkey}&language=${currentLang}&query=${encodeURIComponent(q)}`);
-        const d = await r.json(); render(d[_0x4b31(0x7)], false);
-    }, 500);
+document.getElementById('searchInput').oninput = async (e) => {
+    const q = e.target.value;
+    if(q.length < 3) return;
+    const r = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${_0xkey}&language=${currentLang}&query=${encodeURIComponent(q)}`);
+    const d = await r.json(); render(d.results, false);
 };
 
-// تعطيل الاختصارات الحساسة
 document.onkeydown = (e) => { if(e.keyCode == 123 || (e.ctrlKey && e.shiftKey && e.keyCode == 73)) return false; };
 </script>
 </body>

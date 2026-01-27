@@ -1,39 +1,41 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="mainHtml">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MONOFLIX | BY BENSENOUCI MOUNDIR</title>
+    <title>MONOFLIX | BENSENOUCI MOUNDIR</title>
     <style>
         :root { --red: #e50914; --black: #050505; --dark: #121212; --yellow: #f5c518; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--black); color: white; overflow-x: hidden; }
         
-        header { position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 12px 5%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; }
-        .logo-box { display: flex; align-items: center; gap: 12px; }
-        .logo-img { width: 40px; border-radius: 8px; box-shadow: 0 0 10px var(--red); }
+        header { position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 10px 5%; background: rgba(0,0,0,0.95); border-bottom: 1px solid #222; }
+        .logo-box { display: flex; align-items: center; gap: 10px; }
+        .logo-img { width: 35px; border-radius: 5px; }
         .brand-info h1 { color: var(--red); font-size: 18px; margin: 0; }
-        .brand-info span { font-size: 10px; color: #888; display: block; }
+        
+        .search-container { background: #111; border: 1px solid #333; border-radius: 20px; padding: 5px 15px; display: flex; align-items: center; }
+        #searchInput { background: transparent; border: none; color: white; outline: none; width: 150px; padding: 5px; }
 
         .nav-bar { margin-top: 80px; padding: 15px 5%; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
-        .btn-nav { padding: 8px 18px; background: #1a1a1a; border-radius: 20px; cursor: pointer; white-space: nowrap; border: 1px solid #333; color: white; font-size: 13px; transition: 0.3s; }
+        .btn-nav { padding: 8px 18px; background: #1a1a1a; border-radius: 20px; cursor: pointer; white-space: nowrap; border: 1px solid #333; color: white; font-size: 13px; }
         .btn-nav.active { background: var(--red); border-color: var(--red); }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 10px 5% 50px; }
         .card { cursor: pointer; border-radius: 12px; overflow: hidden; background: var(--dark); border: 1px solid #222; position: relative; transition: 0.3s; }
         .card:hover { transform: scale(1.03); border-color: var(--red); }
-        .card img { width: 100%; height: 210px; object-fit: cover; }
-        .badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: var(--yellow); font-weight: bold; }
+        .card img { width: 100%; height: 210px; object-fit: cover; background: #222; }
+        .badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: var(--yellow); }
 
         .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); display:none; z-index:2000; overflow-y: auto; }
-        .info-content { max-width: 850px; margin: 40px auto; background: #0f0f0f; border-radius: 20px; border: 1px solid #333; padding: 30px; position: relative; }
-        .close-btn { position: absolute; top: 15px; right: 15px; color: var(--red); cursor: pointer; font-size: 24px; }
+        .info-content { max-width: 800px; margin: 40px auto; background: #0f0f0f; border-radius: 20px; border: 1px solid #333; padding: 25px; position: relative; }
+        .close-btn { position: absolute; top: 15px; right: 15px; color: var(--red); cursor: pointer; font-size: 28px; }
 
         #videoLayer { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; display:none; z-index:3000; flex-direction: column; }
         iframe { flex: 1; border: none; }
         .player-bar { padding: 10px 5%; background: #111; display: flex; justify-content: space-between; align-items: center; }
 
-        footer { padding: 30px; text-align: center; font-size: 12px; color: #555; border-top: 1px solid #111; }
+        footer { padding: 20px; text-align: center; font-size: 12px; color: #555; }
     </style>
 </head>
 <body>
@@ -43,11 +45,11 @@
         <img src="https://t3.ftcdn.net/jpg/05/90/75/40/360_F_590754013_9PdsotqXpLpIsYJ6atpZ6y9mZInI3T5C.jpg" class="logo-img">
         <div class="brand-info">
             <h1>MONOFLIX</h1>
-            <span>BY BENSENOUCI MOUNDIR</span>
+            <p style="font-size: 9px; color: #666;">BY BENSENOUCI MOUNDIR</p>
         </div>
     </div>
-    <div style="display:flex; gap:15px; align-items:center;">
-        <input type="text" id="searchInput" placeholder="بحث..." style="background:#111; border:1px solid #333; color:white; padding:6px 12px; border-radius:15px; width:120px; outline:none;">
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="ابحث عن فيلم...">
     </div>
 </header>
 
@@ -55,7 +57,6 @@
     <div class="btn-nav active" onclick="changeCategory('trending', event)">🔥 الكل</div>
     <div class="btn-nav" onclick="changeCategory('top_rated', event)">🔝 الأكثر مشاهدة</div>
     <div class="btn-nav" onclick="changeCategory(28, event)">Action</div>
-    <div class="btn-nav" onclick="changeCategory(27, event)">Horror</div>
     <div class="btn-nav" onclick="changeCategory(16, event)">Anime</div>
     <div class="btn-nav" onclick="showWatchlist(event)">❤️ المفضلات</div>
 </div>
@@ -65,16 +66,16 @@
 <div class="modal" id="infoModal">
     <div class="info-content">
         <span class="close-btn" onclick="closeModal('infoModal')">×</span>
-        <div style="display:flex; gap:25px; flex-wrap:wrap;">
-            <img id="modalPoster" style="width:200px; border-radius:15px;">
-            <div style="flex:1; min-width:280px;">
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+            <img id="modalPoster" style="width:180px; border-radius:10px;">
+            <div style="flex:1; min-width:250px;">
                 <h2 id="modalTitle"></h2>
-                <p id="modalDesc" style="color:#aaa; font-size:14px; margin:15px 0; line-height:1.6;"></p>
-                <div id="tvBox" style="display:none; background:#1a1a1a; padding:15px; border-radius:10px;">
-                    <div id="seasonsGrid" style="display:flex; gap:10px; overflow-x:auto; margin-bottom:15px; padding-bottom:5px;"></div>
-                    <div id="episodesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap:8px;"></div>
+                <p id="modalDesc" style="color:#aaa; font-size:14px; margin:15px 0; line-height:1.5;"></p>
+                <div id="tvBox" style="display:none;">
+                    <div id="seasonsGrid" style="display:flex; gap:8px; overflow-x:auto; margin-bottom:10px;"></div>
+                    <div id="episodesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(45px, 1fr)); gap:5px;"></div>
                 </div>
-                <button class="btn-nav active" style="margin-top:20px; width:100%; height:45px; font-weight:bold;" onclick="watchNow()">▶ مشاهدة الآن</button>
+                <button class="btn-nav active" style="width:100%; height:45px; margin-top:15px;" onclick="watchNow()">▶ مشاهدة</button>
             </div>
         </div>
     </div>
@@ -82,41 +83,64 @@
 
 <div id="videoLayer">
     <div class="player-bar">
-        <select id="serverSelect" onchange="switchServer()" style="background:#222; color:white; border:1px solid #444; padding:5px; border-radius:5px;">
-            <option value="vidsrc_vip">Server 1 (Multi-Subs)</option>
-            <option value="vidsrc_pro">Server 2 (Auto-Select)</option>
-            <option value="vidsrc">Server 3 (Legacy)</option>
+        <select id="serverSelect" onchange="switchServer()" style="background:#222; color:white; padding:5px; border-radius:5px;">
+            <option value="vidsrc_vip">سيرفر 1 (ترجمة تلقائية)</option>
+            <option value="vidsrc_pro">سيرفر 2 (جودة عالية)</option>
+            <option value="vidsrc">سيرفر 3 (سريع)</option>
         </select>
-        <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold;">✕ إغلاق</span>
+        <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer;">إغلاق ×</span>
     </div>
     <iframe id="mainIframe" allowfullscreen></iframe>
 </div>
 
-<footer>Developed with ❤️ by Bensenouci Moundir © 2026</footer>
+<footer>Developed by Bensenouci Moundir © 2026</footer>
 
 <script>
     let currentGenre = 'trending', currentPage = 1, currentItem = {};
     let selectedS = 1, selectedE = 1;
     let watchlist = JSON.parse(localStorage.getItem('monoflix_fav')) || [];
 
-    async function loadMovies(append = false) {
-        const url = `/api/movies?genre=${currentGenre}&page=${currentPage}&lang=ar-SA`;
+    // وظيفة الجلب الأساسية المصلحة
+    async function fetchData(url) {
         try {
             const res = await fetch(url);
             const data = await res.json();
-            render(data.results, append);
-        } catch (e) { console.error("Error loading movies:", e); }
+            return data.results || data;
+        } catch (e) {
+            console.error("خطأ في جلب البيانات:", e);
+            return [];
+        }
     }
 
+    async function loadMovies(append = false) {
+        const url = `/api/movies?genre=${currentGenre}&page=${currentPage}&lang=ar-SA`;
+        const results = await fetchData(url);
+        render(results, append);
+    }
+
+    // إصلاح محرك البحث
+    document.getElementById('searchInput').addEventListener('input', async (e) => {
+        const query = e.target.value;
+        if (query.length > 2) {
+            const results = await fetchData(`/api/movies?query=${encodeURIComponent(query)}`);
+            render(results, false);
+        } else if (query.length === 0) {
+            loadMovies();
+        }
+    });
+
     function render(list, append) {
-        if (!list) return;
-        const html = list.map(item => `
-            <div class="card" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
-                <div class="badge">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}</div>
-                <img src="https://image.tmdb.org/t/p/w342${item.poster_path}" alt="${item.title || item.name}">
-                <div style="padding:10px; font-size:12px; text-align:center; font-weight:600;">${item.title || item.name}</div>
-            </div>`).join('');
         const grid = document.getElementById('mainGrid');
+        if (!list || list.length === 0) {
+            if (!append) grid.innerHTML = "<p style='padding:20px;'>لا توجد نتائج...</p>";
+            return;
+        }
+        const html = list.filter(i => i.poster_path).map(item => `
+            <div class="card" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
+                <div class="badge">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : '0'}</div>
+                <img src="https://image.tmdb.org/t/p/w342${item.poster_path}">
+                <div style="padding:8px; font-size:11px; text-align:center;">${item.title || item.name}</div>
+            </div>`).join('');
         grid.innerHTML = append ? grid.innerHTML + html : html;
     }
 
@@ -124,32 +148,33 @@
         currentItem = item;
         document.getElementById('modalPoster').src = 'https://image.tmdb.org/t/p/w500' + item.poster_path;
         document.getElementById('modalTitle').innerText = item.title || item.name;
-        document.getElementById('modalDesc').innerText = item.overview || "لا يوجد وصف متاح.";
+        document.getElementById('modalDesc').innerText = item.overview || "وصف غير متوفر.";
         document.getElementById('infoModal').style.display = 'block';
         
-        if (item.name) { 
-            document.getElementById('tvBox').style.display = 'block'; 
-            loadSeasons(item.id); 
-        } else { 
-            document.getElementById('tvBox').style.display = 'none'; 
+        if (item.name) {
+            document.getElementById('tvBox').style.display = 'block';
+            const data = await fetchData(`/api/movies?type=tv&id=${item.id}`);
+            if (data.seasons) {
+                document.getElementById('seasonsGrid').innerHTML = data.seasons.filter(s => s.season_number > 0).map(s => 
+                    `<div class="btn-nav" onclick="selectS(${s.season_number}, this)">S${s.season_number}</div>`).join('');
+                selectS(1, document.querySelector('#seasonsGrid .btn-nav'));
+            }
+        } else {
+            document.getElementById('tvBox').style.display = 'none';
         }
-    }
-
-    async function loadSeasons(id) {
-        const res = await fetch(`/api/movies?type=tv&id=${id}`);
-        const data = await res.json();
-        document.getElementById('seasonsGrid').innerHTML = data.seasons.filter(s => s.season_number > 0).map(s => 
-            `<div class="btn-nav" onclick="selectS(${s.season_number}, this)">S${s.season_number}</div>`).join('');
-        selectS(1, document.querySelector('#seasonsGrid .btn-nav'));
     }
 
     async function selectS(sNum, el) {
         selectedS = sNum;
-        if(el) { document.querySelectorAll('#seasonsGrid .btn-nav').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
-        const res = await fetch(`/api/movies?type=tv&id=${currentItem.id}&season=${sNum}`);
-        const data = await res.json();
-        document.getElementById('episodesGrid').innerHTML = data.episodes.map(e => 
-            `<div class="btn-nav" style="padding:5px; text-align:center;" onclick="selectedE=${e.episode_number}; watchNow();">${e.episode_number}</div>`).join('');
+        if(el) {
+            document.querySelectorAll('#seasonsGrid .btn-nav').forEach(b => b.classList.remove('active'));
+            el.classList.add('active');
+        }
+        const data = await fetchData(`/api/movies?type=tv&id=${currentItem.id}&season=${sNum}`);
+        if (data.episodes) {
+            document.getElementById('episodesGrid').innerHTML = data.episodes.map(e => 
+                `<div class="btn-nav" style="padding:5px; text-align:center;" onclick="selectedE=${e.episode_number}; watchNow();">${e.episode_number}</div>`).join('');
+        }
     }
 
     function watchNow() {
@@ -160,37 +185,32 @@
     function switchServer() {
         const s = document.getElementById('serverSelect').value;
         const type = currentItem.title ? 'movie' : 'tv';
-        let url = "";
-        if (s === 'vidsrc_vip') url = `https://vidsrc.vip/embed/${type}/${currentItem.id}`;
-        else if (s === 'vidsrc_pro') url = `https://vidsrc.pro/embed/${type}/${currentItem.id}`;
-        else url = `https://vidsrc.to/embed/${type}/${currentItem.id}`;
+        let url = (s === 'vidsrc_vip') ? `https://vidsrc.vip/embed/${type}/${currentItem.id}` :
+                  (s === 'vidsrc_pro') ? `https://vidsrc.pro/embed/${type}/${currentItem.id}` :
+                  `https://vidsrc.to/embed/${type}/${currentItem.id}`;
         
         if(type === 'tv') url += `/${selectedS}/${selectedE}`;
         document.getElementById('mainIframe').src = url;
     }
 
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; if(id==='videoLayer') document.getElementById('mainIframe').src=''; }
-    
-    function changeCategory(g, e) { 
-        currentGenre = g; currentPage = 1; loadMovies(); 
+    function closeModal(id) {
+        document.getElementById(id).style.display = 'none';
+        if(id === 'videoLayer') document.getElementById('mainIframe').src = '';
+    }
+
+    function changeCategory(g, e) {
+        currentGenre = g; currentPage = 1; loadMovies();
         document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
     }
 
-    function showWatchlist(e) { 
-        render(watchlist, false); 
+    function showWatchlist(e) {
+        render(watchlist, false);
         document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
     }
 
-    document.getElementById('searchInput').oninput = async (e) => {
-        if(e.target.value.length < 3) return;
-        const res = await fetch(`/api/movies?query=${encodeURIComponent(e.target.value)}`);
-        const data = await res.json();
-        render(data.results, false);
-    };
-
-    window.onload = () => loadMovies();
+    window.onload = loadMovies;
 </script>
 </body>
 </html>

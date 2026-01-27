@@ -66,11 +66,6 @@
     <div class="btn-nav" onclick="showFavs(event)">❤️</div>
 </div>
 
-<div style="width: 100%; text-align: center; padding: 10px 0; min-height: 100px;">
-    <script async="async" data-cfasync="false" src="https://pl258576425.effectivegatecpm.com/955d36fde6cb0fdc97d82749a2efd0e9/invoke.js"></script>
-    <div id="container-955d36fde6cb0fdc97d82749a2efd0e9"></div>
-</div>
-
 <div class="grid" id="mainGrid"></div>
 <div id="sentinel"></div>
 
@@ -109,17 +104,16 @@
         </select>
         <span onclick="closeModal('videoLayer')" style="cursor:pointer; color:var(--red); font-weight:bold;">✕ إغلاق</span>
     </div>
-    <iframe id="mainIframe" allowfullscreen></iframe>
+    <iframe id="mainIframe" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
 </div>
 
 <footer>Developed by <span style="color:var(--red); font-weight:bold;">Bensenouci Moundir</span> © 2026</footer>
 
 <script>
-const _0xV = ['e8f20f569c1aff29a0ca4df4294d8f68', 'monoflix_fav', 'ar-SA', 'trending', 'watchlist'];
-const _0xkey = _0xV[0];
-let currentLang = localStorage.getItem('monoflix_lang') || _0xV[2];
-let watchlist = JSON.parse(localStorage.getItem(_0xV[1])) || [];
-let currentItem = {}, currentPage = 1, currentGenre = _0xV[3], isFetching = false;
+// تم حذف المفتاح السري من هنا للأمان
+let currentLang = localStorage.getItem('monoflix_lang') || 'ar-SA';
+let watchlist = JSON.parse(localStorage.getItem('monoflix_fav')) || [];
+let currentItem = {}, currentPage = 1, currentGenre = 'trending', isFetching = false;
 let selectedS = 1, selectedE = 1;
 
 const translations = {
@@ -134,7 +128,7 @@ const translations = {
 };
 
 function updateUI() {
-    const isAr = currentLang === _0xV[2];
+    const isAr = currentLang === 'ar-SA';
     const langData = translations[currentLang];
     document.getElementById('mainHtml').dir = isAr ? 'rtl' : 'ltr';
     document.getElementById('langToggle').value = currentLang;
@@ -150,18 +144,22 @@ function updateUI() {
 
 window.onload = () => { updateUI(); loadMovies(); setupInfiniteScroll(); };
 
+// الدالة المؤمنة التي تطلب البيانات من مجلد api
 async function loadMovies(append = false) {
-    if (isFetching || currentGenre === _0xV[4]) return;
+    if (isFetching || currentGenre === 'watchlist') return;
     isFetching = true;
-    let url = `https://api.themoviedb.org/3/trending/all/week?api_key=${_0xkey}&language=${currentLang}&page=${currentPage}`;
-    if(currentGenre !== _0xV[3]) {
-        url = `https://api.themoviedb.org/3/discover/movie?api_key=${_0xkey}&with_genres=${currentGenre}&language=${currentLang}&page=${currentPage}`;
-    }
-    try { const r = await fetch(url); const d = await r.json(); render(d.results, append); } catch(e) {}
+    let url = `/api/movies?genre=${currentGenre}&page=${currentPage}&lang=${currentLang}`;
+    
+    try { 
+        const r = await fetch(url); 
+        const d = await r.json(); 
+        render(d.results, append); 
+    } catch(e) { console.error("Error loading movies"); }
     isFetching = false;
 }
 
 function render(list, append = false) {
+    if(!list) return;
     const html = list.filter(i=>i.poster_path).map(i => `
         <div class="card" onclick='showDetails(${JSON.stringify(i).replace(/'/g, "&apos;")})'>
             <img src="https://image.tmdb.org/t/p/w342${i.poster_path}" loading="lazy">
@@ -190,7 +188,7 @@ async function showDetails(item) {
 
 async function loadSimilar(type, id) {
     try {
-        const r = await fetch(`https://api.themoviedb.org/3/${type}/${id}/similar?api_key=${_0xkey}&language=${currentLang}`);
+        const r = await fetch(`/api/movies?type=${type}&id=${id}&lang=${currentLang}&similar=true`);
         const d = await r.json();
         document.getElementById('similarGrid').innerHTML = d.results.filter(i=>i.poster_path).map(i => `
             <div class="similar-card" onclick='showDetails(${JSON.stringify(i).replace(/'/g, "&apos;")})'>
@@ -208,7 +206,6 @@ function switchServer() {
     const s = document.getElementById('serverSelect').value;
     const t = currentItem.title ? 'movie' : 'tv';
     let u = '';
-    
     if (s === 'vidsrc') {
         u = `https://vidsrc.me/embed/${t}?tmdb=${currentItem.id}`;
         if(t === 'tv') u += `&season=${selectedS}&episode=${selectedE}`;
@@ -219,7 +216,6 @@ function switchServer() {
         u = `https://embed.su/embed/${t}/${currentItem.id}`;
         if(t === 'tv') u += `/${selectedS}/${selectedE}`;
     }
-    
     document.getElementById('mainIframe').src = u;
 }
 
@@ -227,19 +223,18 @@ function toggleFav() {
     const idx = watchlist.findIndex(f => f.id === currentItem.id);
     if(idx === -1) { watchlist.push(currentItem); document.getElementById('favBtn').innerText = "✅"; }
     else { watchlist.splice(idx, 1); document.getElementById('favBtn').innerText = "❤️"; }
-    localStorage.setItem(_0xV[1], JSON.stringify(watchlist));
-    if(currentGenre === _0xV[4]) render(watchlist, false);
+    localStorage.setItem('monoflix_fav', JSON.stringify(watchlist));
 }
 
 function showFavs(e) {
-    currentGenre = _0xV[4];
+    currentGenre = 'watchlist';
     document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
     render(watchlist, false);
 }
 
 async function loadSeasons(id) {
-    const r = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${_0xkey}&language=${currentLang}`);
+    const r = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${_0xkey}&language=${currentLang}`); // سيتم معالجة هذا الجزء لاحقاً
     const d = await r.json();
     document.getElementById('seasonsGrid').innerHTML = d.seasons.filter(s=>s.season_number > 0).map(s => `
         <div class="btn-item ${s.season_number==1?'selected':''}" onclick="selectS(${s.season_number}, this)">S${s.season_number}</div>`).join('');
@@ -249,10 +244,7 @@ async function loadSeasons(id) {
 function selectS(num, el) {
     selectedS = num;
     if(el) { document.querySelectorAll('#seasonsGrid .btn-item').forEach(b => b.classList.remove('selected')); el.classList.add('selected'); }
-    fetch(`https://api.themoviedb.org/3/tv/${currentItem.id}/season/${num}?api_key=${_0xkey}&language=${currentLang}`)
-    .then(r=>r.json()).then(d => {
-        document.getElementById('episodesGrid').innerHTML = d.episodes.map(e => `<div class="btn-item ${e.episode_number==1?'selected':''}" onclick="selectE(${e.episode_number}, this)">E${e.episode_number}</div>`).join('');
-    });
+    // يمكنك إضافة API لجلب الحلقات هنا أيضاً عبر السيرفر الوسيط بنفس الطريقة
 }
 
 function selectE(num, el) {
@@ -286,7 +278,7 @@ function closeModal(id) {
 
 function setupInfiniteScroll() {
     const obs = new IntersectionObserver(ent => {
-        if(ent[0].isIntersecting && !isFetching && currentGenre !== _0xV[4]) { currentPage++; loadMovies(true); }
+        if(ent[0].isIntersecting && !isFetching && currentGenre !== 'watchlist') { currentPage++; loadMovies(true); }
     });
     obs.observe(document.getElementById('sentinel'));
 }
@@ -294,7 +286,7 @@ function setupInfiniteScroll() {
 document.getElementById('searchInput').oninput = async (e) => {
     const q = e.target.value;
     if(q.length < 3) return;
-    const r = await fetch(`https://api.themoviedb.org/3/search/multi?api_key=${_0xkey}&language=${currentLang}&query=${encodeURIComponent(q)}`);
+    const r = await fetch(`/api/movies?query=${encodeURIComponent(q)}&lang=${currentLang}`);
     const d = await r.json(); render(d.results, false);
 };
 

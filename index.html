@@ -62,20 +62,24 @@
             <span>BY BENSENOUCI MOUNDIR</span>
         </div>
     </div>
-    <div style="display: flex; gap: 10px;">
-        <input type="text" id="searchInput" placeholder="ابحث عن فيلم..." style="padding:8px 15px; border-radius:20px; border:1px solid #333; background:#111; color:white; width:150px; outline:none;">
+    <div style="display: flex; gap: 8px; align-items: center;">
+        <select id="langToggle" onchange="changeLanguage()" style="background:#111; color:white; border:1px solid #333; padding:5px; border-radius:5px; font-size:12px; outline:none; cursor:pointer;">
+            <option value="ar-SA">العربية</option>
+            <option value="en-US">English</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="ابحث..." style="padding:8px 15px; border-radius:20px; border:1px solid #333; background:#111; color:white; width:120px; outline:none; font-size: 12px;">
     </div>
 </header>
 
 <div class="nav-bar" id="mainNav">
-    <div class="btn-nav active" data-id="trending" onclick="changeCategory('trending', event)">🔥 الكل</div>
-    <div class="btn-nav" data-id="28" onclick="changeCategory(28, event)">Action</div>
-    <div class="btn-nav" data-id="27" onclick="changeCategory(27, event)">Horror</div>
-    <div class="btn-nav" data-id="18" onclick="changeCategory(18, event)">Drama</div>
-    <div class="btn-nav" data-id="35" onclick="changeCategory(35, event)">Comedy</div>
-    <div class="btn-nav" data-id="16" onclick="changeCategory(16, event)">Anime</div>
-    <div class="btn-nav" onclick="showWatchlist(event)">❤️ المفضلات</div>
-    <div class="btn-nav" onclick="showHistory(event)">🕒 الأخيرة</div>
+    <div class="btn-nav active" data-id="trending" id="navAll" onclick="changeCategory('trending', event)">🔥 الكل</div>
+    <div class="btn-nav" data-id="28" id="navAction" onclick="changeCategory(28, event)">Action</div>
+    <div class="btn-nav" data-id="27" id="navHorror" onclick="changeCategory(27, event)">Horror</div>
+    <div class="btn-nav" data-id="18" id="navDrama" onclick="changeCategory(18, event)">Drama</div>
+    <div class="btn-nav" data-id="35" id="navComedy" onclick="changeCategory(35, event)">Comedy</div>
+    <div class="btn-nav" data-id="16" id="navAnime" onclick="changeCategory(16, event)">Anime</div>
+    <div class="btn-nav" id="navFav" onclick="showWatchlist(event)">❤️ المفضلات</div>
+    <div class="btn-nav" id="navHist" onclick="showHistory(event)">🕒 الأخيرة</div>
 </div>
 
 <div class="grid" id="mainGrid"></div>
@@ -90,17 +94,17 @@
                 <div id="modalMeta" style="margin:10px 0; font-size:13px; color:var(--yellow);"></div>
                 <p id="modalDesc" style="margin: 15px 0; color: #ccc; font-size: 14px; line-height: 1.6;"></p>
                 <div id="tvSelectors" style="display:none;">
-                    <h4>المواسم:</h4><div id="seasonsGrid" class="btn-grid"></div>
-                    <h4 style="margin-top:15px;">الحلقات:</h4><div id="episodesGrid" class="btn-grid"></div>
+                    <h4 id="txtSeason">المواسم:</h4><div id="seasonsGrid" class="btn-grid"></div>
+                    <h4 id="txtEpisode" style="margin-top:15px;">الحلقات:</h4><div id="episodesGrid" class="btn-grid"></div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="btn-nav active" style="flex:2; background:var(--red);" onclick="watchNow()">▶ مشاهدة</button>
-                    <button class="btn-nav" style="flex:1; background:var(--green); border-color:var(--green);" onclick="downloadNow()">⬇️ تحميل</button>
+                    <button class="btn-nav active" style="flex:2; background:var(--red);" onclick="watchNow()">▶ <span id="txtWatch">مشاهدة</span></button>
+                    <button class="btn-nav" style="flex:1; background:var(--green); border-color:var(--green);" id="txtDown" onclick="downloadNow()">⬇️ تحميل</button>
                     <button class="btn-nav" id="favBtn" onclick="toggleWatchlist()" style="flex:0.5;">❤️</button>
                 </div>
             </div>
         </div>
-        <div class="similar-section"><h3>محتوى مشابه</h3><div id="similarGrid" class="similar-grid"></div></div>
+        <div class="similar-section"><h3 id="txtSimilar">محتوى مشابه</h3><div id="similarGrid" class="similar-grid"></div></div>
     </div>
 </div>
 
@@ -111,7 +115,7 @@
             <option value="vidsrc_cc">Server 2 (CC)</option>
             <option value="embedsu">Server 3 (Multi Sub)</option>
         </select>
-        <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold;">✕ إغلاق النافذة</span>
+        <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold;">✕ <span id="txtClose">إغلاق</span></span>
     </div>
     <iframe id="mainIframe" allowfullscreen></iframe>
 </div>
@@ -121,15 +125,37 @@
 </footer>
 
 <script>
+    let currentLang = localStorage.getItem('monoflix_lang') || 'ar-SA';
     let watchlist = JSON.parse(localStorage.getItem('monoflix_fav')) || [];
     let history = JSON.parse(localStorage.getItem('monoflix_history')) || [];
     let currentGenre = 'trending', currentPage = 1, isFetching = false, currentItem = {};
     let selectedS = 1, selectedE = 1;
 
+    const uiTexts = {
+        'ar-SA': { search: 'ابحث...', navAll: '🔥 الكل', navFav: '❤️ المفضلات', navHist: '🕒 الأخيرة', txtSeason: 'المواسم:', txtEpisode: 'الحلقات:', txtWatch: 'مشاهدة', txtDown: 'تحميل', txtSimilar: 'محتوى مشابه', txtClose: 'إغلاق' },
+        'en-US': { search: 'Search...', navAll: '🔥 All', navFav: '❤️ Favorites', navHist: '🕒 Recent', txtSeason: 'Seasons:', txtEpisode: 'Episodes:', txtWatch: 'Watch', txtDown: 'Download', txtSimilar: 'Similar Content', txtClose: 'Close' }
+    };
+
+    function applyLang() {
+        const texts = uiTexts[currentLang];
+        document.getElementById('searchInput').placeholder = texts.search;
+        document.getElementById('navAll').innerText = texts.navAll;
+        document.getElementById('navFav').innerText = texts.navFav;
+        document.getElementById('navHist').innerText = texts.navHist;
+        document.getElementById('txtSeason').innerText = texts.txtSeason;
+        document.getElementById('txtEpisode').innerText = texts.txtEpisode;
+        document.getElementById('txtWatch').innerText = texts.txtWatch;
+        document.getElementById('txtDown').innerText = texts.txtDown;
+        document.getElementById('txtSimilar').innerText = texts.txtSimilar;
+        document.getElementById('txtClose').innerText = texts.txtClose;
+        document.getElementById('langToggle').value = currentLang;
+        document.getElementById('mainHtml').dir = currentLang === 'ar-SA' ? 'rtl' : 'ltr';
+    }
+
     async function loadMovies(append = false) {
         if (isFetching || currentGenre === 'watchlist' || currentGenre === 'history') return;
         isFetching = true;
-        const res = await fetch(`/api/movies?genre=${currentGenre}&page=${currentPage}&lang=ar-SA`);
+        const res = await fetch(`/api/movies?genre=${currentGenre}&page=${currentPage}&lang=${currentLang}`);
         const data = await res.json();
         render(data.results, append);
         isFetching = false;
@@ -140,8 +166,7 @@
         const html = list.filter(i => i.poster_path).map(item => {
             const year = (item.release_date || item.first_air_date || '').split('-')[0];
             const rate = item.vote_average ? item.vote_average.toFixed(1) : '0';
-            return `
-            <div class="card" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
+            return `<div class="card" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
                 <div class="badge-rate">⭐ ${rate}</div>
                 <div class="badge-year">${year}</div>
                 <img src="https://image.tmdb.org/t/p/w342${item.poster_path}" loading="lazy">
@@ -156,24 +181,18 @@
         currentItem = item;
         document.getElementById('modalPoster').src = 'https://image.tmdb.org/t/p/w500' + item.poster_path;
         document.getElementById('modalTitle').innerText = item.title || item.name;
-        document.getElementById('modalDesc').innerText = item.overview || "لا يوجد وصف متوفر.";
-        document.getElementById('modalMeta').innerText = `التقييم: ⭐ ${item.vote_average} | السنة: ${item.release_date || item.first_air_date}`;
+        document.getElementById('modalDesc').innerText = item.overview || "...";
+        document.getElementById('modalMeta').innerText = `⭐ ${item.vote_average} | 📅 ${item.release_date || item.first_air_date}`;
         document.getElementById('infoModal').style.display = 'block';
-        
         const isFav = watchlist.some(f => f.id === item.id);
         document.getElementById('favBtn').innerText = isFav ? "✅" : "❤️";
-
         loadSimilar(item.title ? 'movie' : 'tv', item.id);
-        if (item.name) {
-            document.getElementById('tvSelectors').style.display = 'block';
-            loadSeasons(item.id);
-        } else {
-            document.getElementById('tvSelectors').style.display = 'none';
-        }
+        if (item.name) { document.getElementById('tvSelectors').style.display = 'block'; loadSeasons(item.id); }
+        else { document.getElementById('tvSelectors').style.display = 'none'; }
     }
 
     async function loadSeasons(id) {
-        const res = await fetch(`/api/movies?type=tv&id=${id}&lang=ar-SA`);
+        const res = await fetch(`/api/movies?type=tv&id=${id}&lang=${currentLang}`);
         const data = await res.json();
         document.getElementById('seasonsGrid').innerHTML = data.seasons.filter(s => s.season_number > 0).map(s => 
             `<div class="btn-item ${s.season_number==1?'selected':''}" onclick="selectS(${s.season_number}, this)">S${s.season_number}</div>`
@@ -183,15 +202,10 @@
 
     async function selectS(sNum, el) {
         selectedS = sNum;
-        if(el) {
-            document.querySelectorAll('#seasonsGrid .btn-item').forEach(b => b.classList.remove('selected'));
-            el.classList.add('selected');
-        }
-        const res = await fetch(`/api/movies?type=tv&id=${currentItem.id}&season=${sNum}&lang=ar-SA`);
+        if(el) { document.querySelectorAll('#seasonsGrid .btn-item').forEach(b => b.classList.remove('selected')); el.classList.add('selected'); }
+        const res = await fetch(`/api/movies?type=tv&id=${currentItem.id}&season=${sNum}&lang=${currentLang}`);
         const data = await res.json();
-        document.getElementById('episodesGrid').innerHTML = data.episodes.map(e => 
-            `<div class="btn-item" onclick="selectE(${e.episode_number}, this)">E${e.episode_number}</div>`
-        ).join('');
+        document.getElementById('episodesGrid').innerHTML = data.episodes.map(e => `<div class="btn-item" onclick="selectE(${e.episode_number}, this)">E${e.episode_number}</div>`).join('');
     }
 
     function selectE(eNum, el) {
@@ -201,7 +215,7 @@
     }
 
     async function loadSimilar(type, id) {
-        const res = await fetch(`/api/movies?type=${type}&id=${id}&lang=ar-SA&similar=true`);
+        const res = await fetch(`/api/movies?type=${type}&id=${id}&lang=${currentLang}&similar=true`);
         const data = await res.json();
         document.getElementById('similarGrid').innerHTML = data.results.slice(0, 10).map(s => `
             <div class="similar-card" onclick='showDetails(${JSON.stringify(s).replace(/'/g, "&apos;")})'>
@@ -210,10 +224,7 @@
     }
 
     function watchNow() {
-        if (!history.some(i => i.id === currentItem.id)) {
-            history.unshift(currentItem);
-            localStorage.setItem('monoflix_history', JSON.stringify(history.slice(0, 20)));
-        }
+        if (!history.some(i => i.id === currentItem.id)) { history.unshift(currentItem); localStorage.setItem('monoflix_history', JSON.stringify(history.slice(0, 20))); }
         document.getElementById('videoLayer').style.display = 'flex';
         switchServer();
     }
@@ -221,11 +232,7 @@
     function switchServer() {
         const s = document.getElementById('serverSelect').value;
         const type = currentItem.title ? 'movie' : 'tv';
-        let url = "";
-        if (s === 'vidsrc') url = `https://vidsrc.to/embed/${type}/${currentItem.id}`;
-        else if (s === 'vidsrc_cc') url = `https://vidsrc.cc/v2/embed/${type}/${currentItem.id}`;
-        else url = `https://embed.su/embed/${type}/${currentItem.id}`;
-        
+        let url = (s === 'vidsrc') ? `https://vidsrc.to/embed/${type}/${currentItem.id}` : (s === 'vidsrc_cc') ? `https://vidsrc.cc/v2/embed/${type}/${currentItem.id}` : `https://embed.su/embed/${type}/${currentItem.id}`;
         if(type === 'tv') url += `/${selectedS}/${selectedE}`;
         document.getElementById('mainIframe').src = url;
     }
@@ -242,34 +249,22 @@
         localStorage.setItem('monoflix_fav', JSON.stringify(watchlist));
     }
 
-    function showWatchlist(e) {
-        currentGenre = 'watchlist'; updateNav(e);
-        render(watchlist, false);
-    }
+    function showWatchlist(e) { currentGenre = 'watchlist'; updateNav(e); render(watchlist, false); }
+    function showHistory(e) { currentGenre = 'history'; updateNav(e); render(history, false); }
+    function changeCategory(g, e) { currentGenre = g; currentPage = 1; updateNav(e); loadMovies(); }
+    function updateNav(e) { document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; if(id === 'videoLayer') document.getElementById('mainIframe').src = ''; }
 
-    function showHistory(e) {
-        currentGenre = 'history'; updateNav(e);
-        render(history, false);
-    }
-
-    function changeCategory(g, e) {
-        currentGenre = g; currentPage = 1; updateNav(e);
+    function changeLanguage() {
+        currentLang = document.getElementById('langToggle').value;
+        localStorage.setItem('monoflix_lang', currentLang);
+        applyLang();
         loadMovies();
-    }
-
-    function updateNav(e) {
-        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).style.display = 'none';
-        if(id === 'videoLayer') document.getElementById('mainIframe').src = '';
     }
 
     document.getElementById('searchInput').oninput = async (e) => {
         if(e.target.value.length < 3) return;
-        const res = await fetch(`/api/movies?query=${encodeURIComponent(e.target.value)}&lang=ar-SA`);
+        const res = await fetch(`/api/movies?query=${encodeURIComponent(e.target.value)}&lang=${currentLang}`);
         const data = await res.json();
         render(data.results, false);
     };
@@ -280,7 +275,7 @@
         }
     };
 
-    window.onload = () => { loadMovies(); };
+    window.onload = () => { applyLang(); loadMovies(); };
 </script>
 </body>
 </html>

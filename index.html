@@ -2,142 +2,120 @@
 <html lang="ar" dir="rtl" id="mainHtml">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MONOFLIX PRO | BY BENSENOUCI MOUNDIR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONOFLIX | BY BENSENOUCI MOUNDIR</title>
     <style>
-        :root { --red: #e50914; --black: #050505; --dark: #121212; --yellow: #f5c518; --green: #28a745; --gray: #888; }
+        :root { --red: #e50914; --black: #050505; --dark: #121212; --yellow: #f5c518; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--black); color: white; overflow-x: hidden; scroll-behavior: smooth; }
+        body { background: var(--black); color: white; overflow-x: hidden; }
         
-        header { position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 12px 5%; background: rgba(0,0,0,0.95); backdrop-filter: blur(15px); border-bottom: 1px solid #222; }
-        .logo-box { display: flex; align-items: center; gap: 12px; cursor: pointer; }
-        .logo-img { width: 40px; border-radius: 10px; box-shadow: 0 0 15px var(--red); }
-        .brand-info h1 { color: var(--red); font-size: 20px; margin: 0; }
-        .brand-info span { font-size: 10px; color: var(--gray); display: block; }
+        header { position: fixed; top: 0; width: 100%; z-index: 1000; display: flex; justify-content: space-between; align-items: center; padding: 12px 5%; background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #222; }
+        .logo-box { display: flex; align-items: center; gap: 12px; }
+        .logo-img { width: 40px; border-radius: 8px; box-shadow: 0 0 10px var(--red); }
+        .brand-info h1 { color: var(--red); font-size: 18px; margin: 0; }
+        .brand-info span { font-size: 10px; color: #888; display: block; }
 
-        .nav-bar { margin-top: 85px; padding: 15px 5%; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
-        .btn-nav { padding: 10px 22px; background: #1a1a1a; border-radius: 30px; cursor: pointer; white-space: nowrap; border: 1px solid #333; color: white; transition: 0.3s; font-size: 13px; font-weight: 600; }
-        .btn-nav.active { background: var(--red); border-color: var(--red); box-shadow: 0 4px 15px rgba(229, 9, 20, 0.4); }
+        .nav-bar { margin-top: 80px; padding: 15px 5%; display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+        .btn-nav { padding: 8px 18px; background: #1a1a1a; border-radius: 20px; cursor: pointer; white-space: nowrap; border: 1px solid #333; color: white; font-size: 13px; transition: 0.3s; }
+        .btn-nav.active { background: var(--red); border-color: var(--red); }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; padding: 20px 5% 50px; }
-        .card { cursor: pointer; border-radius: 15px; overflow: hidden; background: var(--dark); transition: 0.4s; border: 1px solid #222; position: relative; }
-        .card:hover { transform: translateY(-10px); border-color: var(--red); }
-        .card img { width: 100%; height: 230px; object-fit: cover; }
-        .badge-rate { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.85); padding: 3px 8px; border-radius: 6px; font-size: 11px; color: var(--yellow); font-weight: bold; }
-        .badge-year { position: absolute; top: 10px; right: 10px; background: var(--red); color: white; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; padding: 10px 5% 50px; }
+        .card { cursor: pointer; border-radius: 12px; overflow: hidden; background: var(--dark); border: 1px solid #222; position: relative; transition: 0.3s; }
+        .card:hover { transform: scale(1.03); border-color: var(--red); }
+        .card img { width: 100%; height: 210px; object-fit: cover; }
+        .badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; font-size: 10px; color: var(--yellow); font-weight: bold; }
 
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); display:none; z-index:2000; overflow-y: auto; padding: 40px 0; }
-        .info-content { max-width: 900px; margin: auto; background: #0f0f0f; border-radius: 25px; overflow: hidden; position: relative; border: 1px solid #333; }
-        .close-btn { position: absolute; top: 20px; right: 20px; width: 40px; height: 40px; background: var(--red); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10; font-weight: bold; }
-        
-        .btn-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 10px; margin-top: 15px; max-height: 150px; overflow-y: auto; }
-        .btn-item { background: #1a1a1a; border: 1px solid #333; color: white; padding: 10px; border-radius: 10px; cursor: pointer; text-align: center; }
-        .btn-item.selected { background: var(--red); border-color: var(--red); }
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.98); display:none; z-index:2000; overflow-y: auto; }
+        .info-content { max-width: 850px; margin: 40px auto; background: #0f0f0f; border-radius: 20px; border: 1px solid #333; padding: 30px; position: relative; }
+        .close-btn { position: absolute; top: 15px; right: 15px; color: var(--red); cursor: pointer; font-size: 24px; }
 
         #videoLayer { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; display:none; z-index:3000; flex-direction: column; }
-        .player-header { padding: 15px 5%; background: #111; display: flex; justify-content: space-between; align-items: center; }
         iframe { flex: 1; border: none; }
-        
-        footer { padding: 40px; text-align: center; background: #080808; font-size: 14px; color: #666; border-top: 1px solid #222; }
+        .player-bar { padding: 10px 5%; background: #111; display: flex; justify-content: space-between; align-items: center; }
+
+        footer { padding: 30px; text-align: center; font-size: 12px; color: #555; border-top: 1px solid #111; }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo-box" onclick="location.reload()">
+    <div class="logo-box">
         <img src="https://t3.ftcdn.net/jpg/05/90/75/40/360_F_590754013_9PdsotqXpLpIsYJ6atpZ6y9mZInI3T5C.jpg" class="logo-img">
         <div class="brand-info">
             <h1>MONOFLIX</h1>
             <span>BY BENSENOUCI MOUNDIR</span>
         </div>
     </div>
-    <div style="display: flex; gap: 10px; align-items: center;">
-        <div id="notifIcon" style="cursor:pointer; position:relative;" onclick="alert('تنبيه: تم إضافة سيرفر الدبلجة الجديد بنجاح!')">
-            <span style="font-size:20px;">🔔</span>
-            <div style="position:absolute; top:0; right:0; width:8px; height:8px; background:var(--red); border-radius:50%;"></div>
-        </div>
-        <select id="langToggle" onchange="changeLanguage()" style="background:#111; color:white; border:1px solid #333; padding:6px; border-radius:8px; font-size:12px;">
-            <option value="ar-SA">العربية</option>
-            <option value="en-US">English</option>
-        </select>
-        <input type="text" id="searchInput" placeholder="ابحث..." style="padding:8px 15px; border-radius:20px; border:1px solid #333; background:#111; color:white; width:130px; outline:none;">
+    <div style="display:flex; gap:15px; align-items:center;">
+        <input type="text" id="searchInput" placeholder="بحث..." style="background:#111; border:1px solid #333; color:white; padding:6px 12px; border-radius:15px; width:120px; outline:none;">
     </div>
 </header>
 
-<div class="nav-bar" id="mainNav">
+<div class="nav-bar">
     <div class="btn-nav active" onclick="changeCategory('trending', event)">🔥 الكل</div>
     <div class="btn-nav" onclick="changeCategory('top_rated', event)">🔝 الأكثر مشاهدة</div>
     <div class="btn-nav" onclick="changeCategory(28, event)">Action</div>
     <div class="btn-nav" onclick="changeCategory(27, event)">Horror</div>
     <div class="btn-nav" onclick="changeCategory(16, event)">Anime</div>
     <div class="btn-nav" onclick="showWatchlist(event)">❤️ المفضلات</div>
-    <div class="btn-nav" onclick="showHistory(event)">🕒 الأخيرة</div>
 </div>
 
 <div class="grid" id="mainGrid"></div>
 
 <div class="modal" id="infoModal">
     <div class="info-content">
-        <div class="close-btn" onclick="closeModal('infoModal')">✕</div>
-        <div class="info-header" style="display:flex; gap:30px; padding:40px; flex-wrap:wrap;">
-            <img id="modalPoster" style="width:250px; border-radius:20px;">
-            <div class="info-details" style="flex:1; min-width:300px;">
+        <span class="close-btn" onclick="closeModal('infoModal')">×</span>
+        <div style="display:flex; gap:25px; flex-wrap:wrap;">
+            <img id="modalPoster" style="width:200px; border-radius:15px;">
+            <div style="flex:1; min-width:280px;">
                 <h2 id="modalTitle"></h2>
-                <div id="modalMeta" style="margin:10px 0; font-size:14px; color:var(--yellow);"></div>
-                <p id="modalDesc" style="margin: 20px 0; color: #ccc; font-size: 15px; line-height: 1.7;"></p>
-                <div id="tvSelectors" style="display:none;">
-                    <h4>المواسم:</h4><div id="seasonsGrid" class="btn-grid"></div>
-                    <h4 style="margin-top:20px;">الحلقات:</h4><div id="episodesGrid" class="btn-grid"></div>
+                <p id="modalDesc" style="color:#aaa; font-size:14px; margin:15px 0; line-height:1.6;"></p>
+                <div id="tvBox" style="display:none; background:#1a1a1a; padding:15px; border-radius:10px;">
+                    <div id="seasonsGrid" style="display:flex; gap:10px; overflow-x:auto; margin-bottom:15px; padding-bottom:5px;"></div>
+                    <div id="episodesGrid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); gap:8px;"></div>
                 </div>
-                <div style="display:flex; gap:12px; margin-top:25px;">
-                    <button class="btn-nav active" style="flex:2; background:var(--red);" onclick="watchNow()">▶ مشاهدة الآن</button>
-                    <button class="btn-nav" onclick="toggleWatchlist()" style="flex:0.5;">❤️</button>
-                </div>
+                <button class="btn-nav active" style="margin-top:20px; width:100%; height:45px; font-weight:bold;" onclick="watchNow()">▶ مشاهدة الآن</button>
             </div>
         </div>
     </div>
 </div>
 
 <div id="videoLayer">
-    <div class="player-header">
-        <select id="serverSelect" onchange="switchServer()" style="background:#222; color:white; padding:7px; border-radius:8px;">
-            <option value="vidsrc_vip">Server 1 (High Quality)</option>
-            <option value="vidsrc_pro">Server 2 (Dubbed/Multi)</option>
-            <option value="autoembed">Server 3 (Fast Load)</option>
-            <option value="vidsrc">Server 4 (Backup)</option>
+    <div class="player-bar">
+        <select id="serverSelect" onchange="switchServer()" style="background:#222; color:white; border:1px solid #444; padding:5px; border-radius:5px;">
+            <option value="vidsrc_vip">Server 1 (Multi-Subs)</option>
+            <option value="vidsrc_pro">Server 2 (Auto-Select)</option>
+            <option value="vidsrc">Server 3 (Legacy)</option>
         </select>
-        <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold; background:rgba(229,9,20,0.1); padding:8px 15px; border-radius:8px;">✕ إغلاق</span>
+        <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold;">✕ إغلاق</span>
     </div>
     <iframe id="mainIframe" allowfullscreen></iframe>
 </div>
 
-<footer>
-    Developed with ❤️ by <span style="color: var(--red); font-weight: bold;">Bensenouci Moundir</span> © 2026
-</footer>
+<footer>Developed with ❤️ by Bensenouci Moundir © 2026</footer>
 
 <script>
-    let currentLang = localStorage.getItem('monoflix_lang') || 'ar-SA';
-    let watchlist = JSON.parse(localStorage.getItem('monoflix_fav')) || [];
-    let history = JSON.parse(localStorage.getItem('monoflix_history')) || [];
     let currentGenre = 'trending', currentPage = 1, currentItem = {};
     let selectedS = 1, selectedE = 1;
+    let watchlist = JSON.parse(localStorage.getItem('monoflix_fav')) || [];
 
     async function loadMovies(append = false) {
-        const res = await fetch(`/api/movies?genre=${currentGenre}&page=${currentPage}&lang=${currentLang}`);
-        const data = await res.json();
-        render(data.results, append);
+        const url = `/api/movies?genre=${currentGenre}&page=${currentPage}&lang=ar-SA`;
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
+            render(data.results, append);
+        } catch (e) { console.error("Error loading movies:", e); }
     }
 
     function render(list, append) {
         if (!list) return;
-        const html = list.filter(i => i.poster_path).map(item => {
-            const year = (item.release_date || item.first_air_date || '').split('-')[0];
-            return `<div class="card" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
-                <div class="badge-rate">⭐ ${item.vote_average.toFixed(1)}</div><div class="badge-year">${year}</div>
-                <img src="https://image.tmdb.org/t/p/w342${item.poster_path}" loading="lazy">
-                <div style="padding:10px; text-align:center; font-size:12px;">${item.title || item.name}</div>
-            </div>`;
-        }).join('');
+        const html = list.map(item => `
+            <div class="card" onclick='showDetails(${JSON.stringify(item).replace(/'/g, "&apos;")})'>
+                <div class="badge">⭐ ${item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}</div>
+                <img src="https://image.tmdb.org/t/p/w342${item.poster_path}" alt="${item.title || item.name}">
+                <div style="padding:10px; font-size:12px; text-align:center; font-weight:600;">${item.title || item.name}</div>
+            </div>`).join('');
         const grid = document.getElementById('mainGrid');
         grid.innerHTML = append ? grid.innerHTML + html : html;
     }
@@ -146,32 +124,35 @@
         currentItem = item;
         document.getElementById('modalPoster').src = 'https://image.tmdb.org/t/p/w500' + item.poster_path;
         document.getElementById('modalTitle').innerText = item.title || item.name;
-        document.getElementById('modalDesc').innerText = item.overview || "...";
-        document.getElementById('modalMeta').innerText = `⭐ ${item.vote_average.toFixed(1)} | ${item.release_date || item.first_air_date}`;
+        document.getElementById('modalDesc').innerText = item.overview || "لا يوجد وصف متاح.";
         document.getElementById('infoModal').style.display = 'block';
-        if (item.name) { document.getElementById('tvSelectors').style.display = 'block'; loadSeasons(item.id); }
-        else { document.getElementById('tvSelectors').style.display = 'none'; }
+        
+        if (item.name) { 
+            document.getElementById('tvBox').style.display = 'block'; 
+            loadSeasons(item.id); 
+        } else { 
+            document.getElementById('tvBox').style.display = 'none'; 
+        }
     }
 
     async function loadSeasons(id) {
-        const res = await fetch(`/api/movies?type=tv&id=${id}&lang=${currentLang}`);
+        const res = await fetch(`/api/movies?type=tv&id=${id}`);
         const data = await res.json();
-        document.getElementById('seasonsGrid').innerHTML = data.seasons.filter(s => s.season_number > 0).map(s => `<div class="btn-item ${s.season_number==1?'selected':''}" onclick="selectS(${s.season_number}, this)">S${s.season_number}</div>`).join('');
-        selectS(1);
+        document.getElementById('seasonsGrid').innerHTML = data.seasons.filter(s => s.season_number > 0).map(s => 
+            `<div class="btn-nav" onclick="selectS(${s.season_number}, this)">S${s.season_number}</div>`).join('');
+        selectS(1, document.querySelector('#seasonsGrid .btn-nav'));
     }
 
     async function selectS(sNum, el) {
         selectedS = sNum;
-        if(el) { document.querySelectorAll('#seasonsGrid .btn-item').forEach(b => b.classList.remove('selected')); el.classList.add('selected'); }
-        const res = await fetch(`/api/movies?type=tv&id=${currentItem.id}&season=${sNum}&lang=${currentLang}`);
+        if(el) { document.querySelectorAll('#seasonsGrid .btn-nav').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+        const res = await fetch(`/api/movies?type=tv&id=${currentItem.id}&season=${sNum}`);
         const data = await res.json();
-        document.getElementById('episodesGrid').innerHTML = data.episodes.map(e => `<div class="btn-item" onclick="selectE(${e.episode_number}, this)">E${e.episode_number}</div>`).join('');
+        document.getElementById('episodesGrid').innerHTML = data.episodes.map(e => 
+            `<div class="btn-nav" style="padding:5px; text-align:center;" onclick="selectedE=${e.episode_number}; watchNow();">${e.episode_number}</div>`).join('');
     }
 
-    function selectE(eNum, el) { selectedE = eNum; document.querySelectorAll('#episodesGrid .btn-item').forEach(b => b.classList.remove('selected')); el.classList.add('selected'); }
-
     function watchNow() {
-        if (!history.some(i => i.id === currentItem.id)) { history.unshift(currentItem); localStorage.setItem('monoflix_history', JSON.stringify(history.slice(0, 20))); }
         document.getElementById('videoLayer').style.display = 'flex';
         switchServer();
     }
@@ -182,25 +163,33 @@
         let url = "";
         if (s === 'vidsrc_vip') url = `https://vidsrc.vip/embed/${type}/${currentItem.id}`;
         else if (s === 'vidsrc_pro') url = `https://vidsrc.pro/embed/${type}/${currentItem.id}`;
-        else if (s === 'autoembed') url = `https://autoembed.to/embed/${type}/${currentItem.id}`;
         else url = `https://vidsrc.to/embed/${type}/${currentItem.id}`;
         
         if(type === 'tv') url += `/${selectedS}/${selectedE}`;
         document.getElementById('mainIframe').src = url;
     }
 
-    function toggleWatchlist() {
-        const idx = watchlist.findIndex(f => f.id === currentItem.id);
-        if(idx === -1) watchlist.push(currentItem); else watchlist.splice(idx, 1);
-        localStorage.setItem('monoflix_fav', JSON.stringify(watchlist));
-        alert('تم تحديث قائمة المفضلات');
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; if(id==='videoLayer') document.getElementById('mainIframe').src=''; }
+    
+    function changeCategory(g, e) { 
+        currentGenre = g; currentPage = 1; loadMovies(); 
+        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
     }
 
-    function showWatchlist(e) { currentGenre = 'watchlist'; render(watchlist, false); updateNav(e); }
-    function showHistory(e) { currentGenre = 'history'; render(history, false); updateNav(e); }
-    function changeCategory(g, e) { currentGenre = g; currentPage = 1; loadMovies(); updateNav(e); }
-    function updateNav(e) { document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active')); e.target.classList.add('active'); }
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; if(id === 'videoLayer') document.getElementById('mainIframe').src = ''; }
+    function showWatchlist(e) { 
+        render(watchlist, false); 
+        document.querySelectorAll('.btn-nav').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+    }
+
+    document.getElementById('searchInput').oninput = async (e) => {
+        if(e.target.value.length < 3) return;
+        const res = await fetch(`/api/movies?query=${encodeURIComponent(e.target.value)}`);
+        const data = await res.json();
+        render(data.results, false);
+    };
+
     window.onload = () => loadMovies();
 </script>
 </body>

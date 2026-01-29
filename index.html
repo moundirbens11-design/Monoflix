@@ -294,21 +294,26 @@ function switchServer() {
     
     let url = "";
 
+    // السيرفر 1: vidsrc.me (الأكثر استقراراً)
     if (s === 'vidsrc_pro') {
-        // استخدام سيرفر .me لأنه الأكثر استقراراً حالياً
         url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv' ? `&s=${sNum}&e=${eNum}` : ''}`;
     } 
+    // السيرفر 2: vidsrc.to
     else if (s === 'vidbinge') {
-        url = `https://vidbinge.dev/embed/${type}/${id}${type==='tv' ? `/${sNum}/${eNum}` : ''}`;
-    }
-    else if (s === 'vidsrc_to') {
         url = `https://vidsrc.to/embed/${type}/${id}${type==='tv' ? `/${sNum}/${eNum}` : ''}`;
     }
+    // السيرفر 3: vidbinge.dev (سيرفر سريع جداً)
+    else if (s === 'vidsrc_to') {
+        url = `https://vidbinge.dev/embed/${type}/${id}${type==='tv' ? `/${sNum}/${eNum}` : ''}`;
+    }
+    // السيرفر 4: البديل الشامل
     else {
         url = `https://multiembed.mov/?video_id=${id}&tmdb=1${type==='tv' ? `&s=${sNum}&e=${eNum}` : ''}`;
     }
 
-    document.getElementById('mainIframe').src = url;
+    // إضافة سطر مهم جداً لمنع الـ Redirect لروابط معطلة
+    const iframe = document.getElementById('mainIframe');
+    iframe.src = url;
 }
 
 // دالة التحميل المصلحة

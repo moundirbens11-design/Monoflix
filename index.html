@@ -280,7 +280,8 @@ function showContinueWatching() {
 }
 
  
-   function switchServer() {
+  // دالة تبديل السيرفرات - تشمل السيرفرات الأربعة بالترتيب
+function switchServer() {
     const s = document.getElementById('serverSelect').value;
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
@@ -289,30 +290,36 @@ function showContinueWatching() {
     
     let url = "";
 
-    // استخدام if/else بدلاً من switch للتأكد من قراءة الروابط الجديدة
+    // السيرفر 1
     if (s === 'vidsrc_pro') {
         url = "https://vidsrc.pro/embed/" + type + "/" + id;
         if(type === 'tv') url += "/" + sNum + "/" + eNum;
     } 
+    // السيرفر 2
     else if (s === 'vidbinge') {
         url = "https://vidbinge.dev/embed/" + type + "/" + id;
         if(type === 'tv') url += "/" + sNum + "/" + eNum;
     }
+    // السيرفر 3
     else if (s === 'vidsrc_to') {
         url = "https://vidsrc.to/embed/" + type + "/" + id;
         if(type === 'tv') url += "/" + sNum + "/" + eNum;
     }
+    // السيرفر 4 (البديل)
     else {
         url = "https://multiembed.mov/?video_id=" + id + "&tmdb=1";
         if(type === 'tv') url += "&s=" + sNum + "&e=" + eNum;
     }
 
+    // تحديث المشغل فوراً
     document.getElementById('mainIframe').src = url;
 }
-  function downloadNow() {
+
+// دالة التحميل المصلحة
+function downloadNow() {
     const id = currentItem.id;
     const type = currentItem.title ? 'movie' : 'tv';
-    // التوجه لصفحة vidsrc.pro لأنها توفر زر تحميل داخل المشغل
+    // نستخدم سيرفر vidsrc_pro لأنه يوفر خيارات تحميل ممتازة
     const downloadUrl = "https://vidsrc.pro/embed/" + type + "/" + id;
     window.open(downloadUrl, '_blank');
 }

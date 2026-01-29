@@ -289,33 +289,25 @@ function switchServer() {
     const s = document.getElementById('serverSelect').value;
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
-    const sNum = typeof selectedS !== 'undefined' ? selectedS : 1;
-    const eNum = typeof selectedE !== 'undefined' ? selectedE : 1;
+    const sNum = selectedS || 1;
+    const eNum = selectedE || 1;
     
     let url = "";
 
-    // السيرفر 1
     if (s === 'vidsrc_pro') {
-        url = "https://vidsrc.pro/embed/" + type + "/" + id;
-        if(type === 'tv') url += "/" + sNum + "/" + eNum;
+        // استخدام سيرفر .me لأنه الأكثر استقراراً حالياً
+        url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv' ? `&s=${sNum}&e=${eNum}` : ''}`;
     } 
-    // السيرفر 2
     else if (s === 'vidbinge') {
-        url = "https://vidbinge.dev/embed/" + type + "/" + id;
-        if(type === 'tv') url += "/" + sNum + "/" + eNum;
+        url = `https://vidbinge.dev/embed/${type}/${id}${type==='tv' ? `/${sNum}/${eNum}` : ''}`;
     }
-    // السيرفر 3
     else if (s === 'vidsrc_to') {
-        url = "https://vidsrc.to/embed/" + type + "/" + id;
-        if(type === 'tv') url += "/" + sNum + "/" + eNum;
+        url = `https://vidsrc.to/embed/${type}/${id}${type==='tv' ? `/${sNum}/${eNum}` : ''}`;
     }
-    // السيرفر 4 (البديل)
     else {
-        url = "https://multiembed.mov/?video_id=" + id + "&tmdb=1";
-        if(type === 'tv') url += "&s=" + sNum + "&e=" + eNum;
+        url = `https://multiembed.mov/?video_id=${id}&tmdb=1${type==='tv' ? `&s=${sNum}&e=${eNum}` : ''}`;
     }
 
-    // تحديث المشغل فوراً
     document.getElementById('mainIframe').src = url;
 }
 

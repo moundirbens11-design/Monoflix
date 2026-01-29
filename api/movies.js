@@ -1,6 +1,6 @@
 export default async function handler(req, res) {
     // --- نظام الحماية ---
-    const allowedOrigin = "https://monoflix.vercel.app"; // ضع رابط موقعك هنا
+    const allowedOrigin = "monoflix.vercel.app"; // ضع رابط موقعك هنا
     const requestOrigin = req.headers.origin || req.headers.referer;
 
     // التحقق مما إذا كان الطلب قادم من موقعك أم لا

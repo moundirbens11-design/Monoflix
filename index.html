@@ -279,46 +279,39 @@ function showContinueWatching() {
     }
 }
 
-  function switchServer() {
+ 
+   function switchServer() {
     const s = document.getElementById('serverSelect').value;
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
     
-    // جلب رقم الموسم والحلقة (إذا لم يوجد نضع 1 كقيمة افتراضية)
+    // جلب رقم الموسم والحلقة
     const sNum = typeof selectedS !== 'undefined' ? selectedS : 1;
     const eNum = typeof selectedE !== 'undefined' ? selectedE : 1;
     
     let url = "";
 
-    switch(s) {
-        case 'vidsrc_pro': // Server 1
-            url = `https://vidsrc.pro/embed/${type}/${id}`;
-            if(type === 'tv') url += `/${sNum}/${eNum}`;
-            break;
-
-        case 'vidbinge': // Server 2
-            url = `https://vidbinge.dev/embed/${type}/${id}`;
-            if(type === 'tv') url += `/${sNum}/${eNum}`;
-            break;
-
-        case 'vidsrc_to': // Server 3
-            url = `https://vidsrc.to/embed/${type}/${id}`;
-            if(type === 'tv') url += `/${sNum}/${eNum}`;
-            break;
-
-        case 'superembed': // Server 4
-            url = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
-            if(type === 'tv') url += `&s=${sNum}&e=${eNum}`;
-            break;
-
-        default:
-            url = `https://vidsrc.pro/embed/${type}/${id}`;
-            if(type === 'tv') url += `/${sNum}/${eNum}`;
+    // استخدام الروابط المباشرة لقطع الشك باليقين
+    if (s === 'vidsrc_pro') {
+        url = "https://vidsrc.pro/embed/" + type + "/" + id;
+        if(type === 'tv') url += "/" + sNum + "/" + eNum;
+    } 
+    else if (s === 'vidbinge') {
+        url = "https://vidbinge.dev/embed/" + type + "/" + id;
+        if(type === 'tv') url += "/" + sNum + "/" + eNum;
+    }
+    else if (s === 'vidsrc_to') {
+        url = "https://vidsrc.to/embed/" + type + "/" + id;
+        if(type === 'tv') url += "/" + sNum + "/" + eNum;
+    }
+    else if (s === 'superembed') {
+        url = "https://multiembed.mov/?video_id=" + id + "&tmdb=1";
+        if(type === 'tv') url += "&s=" + sNum + "&e=" + eNum;
     }
 
-    // تحديث المشغل (تأكد أن الـ id هو mainIframe كما في الـ HTML لديك)
+    // إجبار المشغل على التحديث
     const player = document.getElementById('mainIframe');
-    if(player) {
+    if (player) {
         player.src = url;
     }
 }
@@ -326,14 +319,12 @@ function showContinueWatching() {
     const id = currentItem.id;
     const type = currentItem.title ? 'movie' : 'tv';
     
-    // استخدام موقع يوفر روابط تحميل مباشرة بناءً على ID الفيلم
-    // يمكنك استخدام vidsrc.pro/download أو أي خدمة تحميل أخرى
+    // هذا الرابط سيوجه المستخدم لصفحة تحتوي على روابط تحميل مباشرة
     const downloadUrl = `https://vidsrc.pro/embed/${type}/${id}`;
     
     // فتح الرابط في نافذة جديدة
     window.open(downloadUrl, '_blank');
 }
-
     function toggleWatchlist() {
         const idx = watchlist.findIndex(f => f.id === currentItem.id);
         if(idx === -1) { watchlist.push(currentItem); document.getElementById('favBtn').innerText = "✅"; }

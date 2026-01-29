@@ -127,10 +127,10 @@
 <div id="videoLayer">
     <div class="player-header">
         <select id="serverSelect" onchange="switchServer()" style="background:#222; color:white; padding:7px; border-radius:8px;">
-            <option value="vidsrc_me">Server 1 (Fast - vidsrc.me ⚡)</option>
-            <option value="vidsrc_to">Server 2 (Popular - vidsrc.to ✨)</option>
-            <option value="vidbinge">Server 3 (vidbinge.dev 🎬)</option>
-            <option value="autoembed">Server 4 (Alternative 🛠️)</option>
+            <option value="vidsrc_cc">Server 1 (Fast - vidsrc.cc ⚡)</option>
+<option value="multiembed">Server 2 (multiembed.mov ✨)</option>
+<option value="twoembed">Server 3 (2embed.to 🎬)</option>
+
         </select>
         <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold; background:rgba(229,9,20,0.1); padding:8px 15px; border-radius:8px;">✕ إغلاق</span>
     </div>
@@ -271,30 +271,37 @@
         }
     }
 
-    function switchServer() {
-        const s = document.getElementById('serverSelect').value;
-        const type = currentItem.title ? 'movie' : 'tv';
-        const id = currentItem.id;
-        const sNum = selectedS || 1;
-        const eNum = selectedE || 1;
-        let url = "";
+   function switchServer() {
+    const s = document.getElementById('serverSelect').value;
+    const type = currentItem.title ? 'movie' : 'tv';
+    const id = currentItem.id;
+    const sNum = selectedS || 1;
+    const eNum = selectedE || 1;
+    let url = "";
 
-        if (s === 'vidsrc_me') {
-            url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv' ? `&s=${sNum}&e=${eNum}` : ''}`;
-        } else if (s === 'vidsrc_to') {
-            url = `https://vidsrc.to/embed/${type}/${id}${type==='tv' ? `/${sNum}/${eNum}` : ''}`;
-        } else if (s === 'vidbinge') {
-            url = `https://vidbinge.dev/embed/${type}/${id}${type==='tv' ? `/${sNum}/${eNum}` : ''}`;
+    if (s === 'vidsrc_cc') {
+        url = `https://vidsrc.cc/v2/embed/${type}/${id}`;
+    } 
+    else if (s === 'multiembed') {
+        url = `https://multiembed.mov/?video_id=${id}`;
+    } 
+    else if (s === 'twoembed') {
+        if (type === 'movie') {
+            url = `https://www.2embed.to/embed/tmdb/movie?id=${id}`;
         } else {
-            url = `https://autoembed.to/embed/tmdb/${type}/${id}?s=${sNum}&e=${eNum}`;
+            url = `https://www.2embed.to/embed/tmdb/tv?id=${id}&s=${sNum}&e=${eNum}`;
         }
-        document.getElementById('mainIframe').src = url;
     }
+
+    document.getElementById('mainIframe').src = url;
+}
+
 
     function downloadNow() {
         const id = currentItem.id;
         const type = currentItem.title ? 'movie' : 'tv';
-        window.open(`https://vidsrc.me/embed/${type}?tmdb=${id}`, '_blank');
+       window.open(`https://vidsrc.cc/v2/embed/${type}/${id}`, '_blank');
+
     }
 
     function toggleWatchlist() {

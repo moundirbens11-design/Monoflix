@@ -303,35 +303,49 @@ function showContinueWatching() {
     const s = document.getElementById('serverSelect').value;
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
+    
+    // تأكد من جلب قيم الموسم والحلقة الحالية
+    const sNum = typeof selectedS !== 'undefined' ? selectedS : 1;
+    const eNum = typeof selectedE !== 'undefined' ? selectedE : 1;
+    
     let url = "";
 
     switch(s) {
         case 'vidsrc_pro':
+            // الرابط الصحيح لـ Vidsrc Pro
             url = `https://vidsrc.pro/embed/${type}/${id}`;
-            if(type === 'tv') url += `/${selectedS}/${selectedE}`;
+            if(type === 'tv') url += `/${sNum}/${eNum}`;
             break;
-            
+
         case 'vidbinge':
             url = `https://vidbinge.dev/embed/${type}/${id}`;
-            if(type === 'tv') url += `/${selectedS}/${selectedE}`;
+            if(type === 'tv') url += `/${sNum}/${eNum}`;
             break;
 
         case 'vidsrc_to':
             url = `https://vidsrc.to/embed/${type}/${id}`;
-            if(type === 'tv') url += `/${selectedS}/${selectedE}`;
+            if(type === 'tv') url += `/${sNum}/${eNum}`;
             break;
 
         case 'superembed':
             url = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
-            if(type === 'tv') url += `&s=${selectedS}&e=${selectedE}`;
+            if(type === 'tv') url += `&s=${sNum}&e=${eNum}`;
             break;
-            
+
         default:
             url = `https://vidsrc.pro/embed/${type}/${id}`;
+            if(type === 'tv') url += `/${sNum}/${eNum}`;
     }
 
-    document.getElementById('mainIframe').src = url;
+    // تحديث المشغل بالرابط الجديد
+    const player = document.getElementById('videoPlayer');
+    if(player) {
+        player.src = url;
+    }
 }
+
+    document.getElementById('mainIframe').src = url;
+
     function downloadNow() {
         const name = currentItem.title || currentItem.name;
         window.open(`https://www.google.com/search?q=تحميل+${encodeURIComponent(name)}+direct+link`, '_blank');

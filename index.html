@@ -299,12 +299,11 @@ function showContinueWatching() {
     }
 }
 
-   function switchServer() {
+  function switchServer() {
     const s = document.getElementById('serverSelect').value;
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
     
-    // تأكد من جلب قيم الموسم والحلقة الحالية
     const sNum = typeof selectedS !== 'undefined' ? selectedS : 1;
     const eNum = typeof selectedE !== 'undefined' ? selectedE : 1;
     
@@ -312,39 +311,30 @@ function showContinueWatching() {
 
     switch(s) {
         case 'vidsrc_pro':
-            // الرابط الصحيح لـ Vidsrc Pro
             url = `https://vidsrc.pro/embed/${type}/${id}`;
             if(type === 'tv') url += `/${sNum}/${eNum}`;
             break;
-
         case 'vidbinge':
             url = `https://vidbinge.dev/embed/${type}/${id}`;
             if(type === 'tv') url += `/${sNum}/${eNum}`;
             break;
-
         case 'vidsrc_to':
             url = `https://vidsrc.to/embed/${type}/${id}`;
             if(type === 'tv') url += `/${sNum}/${eNum}`;
             break;
-
         case 'superembed':
             url = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
             if(type === 'tv') url += `&s=${sNum}&e=${eNum}`;
             break;
-
         default:
             url = `https://vidsrc.pro/embed/${type}/${id}`;
             if(type === 'tv') url += `/${sNum}/${eNum}`;
     }
 
-    // تحديث المشغل بالرابط الجديد
-    const player = document.getElementById('videoPlayer');
-    if(player) {
-        player.src = url;
-    }
+    // هذا هو السطر الصحيح لتحديث المشغل
+    const player = document.getElementById('mainIframe');
+    if(player) player.src = url;
 }
-
-    document.getElementById('mainIframe').src = url;
 
     function downloadNow() {
         const name = currentItem.title || currentItem.name;
@@ -378,14 +368,18 @@ function showContinueWatching() {
         render(data.results, false);
     };
 
-    window.onscroll = () => { if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800 && !isFetching && currentGenre !== 'watchlist' && currentGenre !== 'history') { currentPage++; loadMovies(true); } };
-    window.onload = () => { applyLang(); loadMovies(); };
-    // استدعاء الوظيفة عند تحميل الصفحة
- window.onload= () => { 
-    applyLang(); 
-    loadMovies(); 
-    showContinueWatching(); 
-};
+   window.onscroll = () => { 
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800 && !isFetching && currentGenre !== 'watchlist' && currentGenre !== 'history') { 
+            currentPage++; 
+            loadMovies(true); 
+        } 
+    };
+
+    window.onload = () => { 
+        applyLang(); 
+        loadMovies(); 
+        showContinueWatching(); 
+    };
 </script>
 </body>
 </html>

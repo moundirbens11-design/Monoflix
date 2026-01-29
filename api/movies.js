@@ -1,15 +1,15 @@
 export default async function handler(req, res) {
-    // --- نظام الحماية ---
-    const allowedOrigin = "monoflix.vercel.app"; // ضع رابط موقعك هنا
-    const requestOrigin = req.headers.origin || req.headers.referer;
+    // --- نظام الحماية المصحح ---
+    const allowedOrigin = "https://monoflix.vercel.app"; 
+    const requestOrigin = req.headers.origin;
 
-    // التحقق مما إذا كان الطلب قادم من موقعك أم لا
-    if (!requestOrigin || !requestOrigin.startsWith(allowedOrigin)) {
+    // السماح بالطلبات التي تأتي من موقعك فقط
+    if (requestOrigin && requestOrigin !== allowedOrigin) {
         return res.status(403).json({ error: "Access Denied: Unrecognized Source" });
     }
 
-    // إضافة ترويسات الحماية (CORS) لضمان عدم القراءة من متصفح آخر
-    res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+    // إضافة ترويسات الحماية
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigin || "*");
     res.setHeader('Access-Control-Allow-Methods', 'GET');
     // -------------------
 
@@ -17,6 +17,7 @@ export default async function handler(req, res) {
     const API_KEY = process.env.TMDB_API_KEY; 
     const language = lang || 'ar-SA';
 
+    // بقية الكود كما هي...
     let url = "";
 
     try {

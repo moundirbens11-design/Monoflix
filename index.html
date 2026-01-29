@@ -284,14 +284,12 @@ function showContinueWatching() {
     const s = document.getElementById('serverSelect').value;
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
-    
-    // جلب رقم الموسم والحلقة
     const sNum = typeof selectedS !== 'undefined' ? selectedS : 1;
     const eNum = typeof selectedE !== 'undefined' ? selectedE : 1;
     
     let url = "";
 
-    // استخدام الروابط المباشرة لقطع الشك باليقين
+    // استخدام if/else بدلاً من switch للتأكد من قراءة الروابط الجديدة
     if (s === 'vidsrc_pro') {
         url = "https://vidsrc.pro/embed/" + type + "/" + id;
         if(type === 'tv') url += "/" + sNum + "/" + eNum;
@@ -304,25 +302,18 @@ function showContinueWatching() {
         url = "https://vidsrc.to/embed/" + type + "/" + id;
         if(type === 'tv') url += "/" + sNum + "/" + eNum;
     }
-    else if (s === 'superembed') {
+    else {
         url = "https://multiembed.mov/?video_id=" + id + "&tmdb=1";
         if(type === 'tv') url += "&s=" + sNum + "&e=" + eNum;
     }
 
-    // إجبار المشغل على التحديث
-    const player = document.getElementById('mainIframe');
-    if (player) {
-        player.src = url;
-    }
+    document.getElementById('mainIframe').src = url;
 }
-   function downloadNow() {
+  function downloadNow() {
     const id = currentItem.id;
     const type = currentItem.title ? 'movie' : 'tv';
-    
-    // هذا الرابط سيوجه المستخدم لصفحة تحتوي على روابط تحميل مباشرة
-    const downloadUrl = `https://vidsrc.pro/embed/${type}/${id}`;
-    
-    // فتح الرابط في نافذة جديدة
+    // التوجه لصفحة vidsrc.pro لأنها توفر زر تحميل داخل المشغل
+    const downloadUrl = "https://vidsrc.pro/embed/" + type + "/" + id;
     window.open(downloadUrl, '_blank');
 }
     function toggleWatchlist() {

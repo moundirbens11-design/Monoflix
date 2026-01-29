@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MONOFLIX PRO | BY BENSENOUCI MOUNDIR</title>
+    <link rel="icon" type="image/png" href="https://t3.ftcdn.net/jpg/05/90/75/40/360_F_590754013_9PdsotqXpLpIsYJ6atpZ6y9mZInI3T5C.jpg">
     <style>
         :root { --red: #e50914; --black: #050505; --dark: #121212; --yellow: #f5c518; --green: #28a745; --gray: #888; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -94,7 +95,8 @@
     <div class="btn-nav" id="navFav" onclick="showWatchlist(event)">❤️ المفضلات</div>
     <div class="btn-nav" id="navHist" onclick="showHistory(event)">🕒 الأخيرة</div>
 </div>
-
+<h3 id="continueTitle" style="margin: 20px 5% 0; display:none; color: var(--red); font-size: 18px;">🎬 متابعة المشاهدة</h3>
+<div class="nav-bar" id="continueGrid" style="display:none; padding-top:10px; margin-top: 10px;"></div>
 <div class="grid" id="mainGrid"></div>
 
 <div class="modal" id="infoModal">
@@ -110,11 +112,15 @@
                     <h4 id="txtSeason">المواسم:</h4><div id="seasonsGrid" class="btn-grid"></div>
                     <h4 id="txtEpisode" style="margin-top:20px;">الحلقات:</h4><div id="episodesGrid" class="btn-grid"></div>
                 </div>
-                <div style="display:flex; gap:12px; margin-top:25px;">
-                    <button class="btn-nav active" style="flex:2; background:var(--red); height:45px;" onclick="watchNow()">▶ <span id="txtWatch">مشاهدة</span></button>
-                    <button class="btn-nav" style="flex:1; background:var(--green); border-color:var(--green);" id="txtDown" onclick="downloadNow()">⬇️ تحميل</button>
-                    <button class="btn-nav" id="favBtn" onclick="toggleWatchlist()" style="flex:0.5;">❤️</button>
-                </div>
+                <div style="display:flex; gap:12px; margin-top:25px; flex-wrap: wrap;">
+    <button class="btn-nav active" style="flex:2; background:var(--red); height:45px;" onclick="watchNow()">▶ <span id="txtWatch">مشاهدة</span></button>
+    
+    <button class="btn-nav" style="flex:1; background:var(--green); border-color:var(--green);" onclick="downloadNow()">⬇️ تحميل</button>
+    
+    <button class="btn-nav" style="flex:1; background:#333; border-color:#444;" onclick="copyLink()">🔗 مشاركة</button>
+    
+    <button class="btn-nav" id="favBtn" onclick="toggleWatchlist()" style="flex:0.5;">❤️</button>
+</div>
             </div>
         </div>
         <div class="similar-section"><h3 id="txtSimilar">محتوى مشابه</h3><div id="similarGrid" class="similar-grid"></div></div>
@@ -124,10 +130,11 @@
 <div id="videoLayer">
     <div class="player-header">
         <select id="serverSelect" onchange="switchServer()" style="background:#222; color:white; padding:7px; border-radius:8px;">
-            <option value="embedsu">Server 1 (Multi Subs 🌍)</option>
-            <option value="vidsrc">Server 2 (VidSrc)</option>
-            <option value="vidsrc_cc">Server 3 (VidSrc PRO)</option>
-        </select>
+    <option value="vidsrc_pro">Server 1 (Fast - Low Ads ⚡)</option>
+    <option value="vidbinge">Server 2 (Clean UI ✨)</option>
+    <option value="vidsrc_to">Server 3 (Vidsrc To)</option>
+    <option value="superembed">Server 4 (Alternative)</option>
+</select>
         <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold; background:rgba(229,9,20,0.1); padding:8px 15px; border-radius:8px;">✕ إغلاق</span>
     </div>
     <iframe id="mainIframe" allowfullscreen></iframe>
@@ -232,19 +239,100 @@
     }
 
     function watchNow() {
-        if (!history.some(i => i.id === currentItem.id)) { history.unshift(currentItem); localStorage.setItem('monoflix_history', JSON.stringify(history.slice(0, 24))); }
-        document.getElementById('videoLayer').style.display = 'flex';
-        switchServer();
+    // حفظ الفيلم في التاريخ (موجود لديك)
+    if (!history.some(i => i.id === currentItem.id)) { 
+        history.unshift(currentItem); 
+        localStorage.setItem('monoflix_history', JSON.stringify(history.slice(0, 24))); 
     }
 
-    function switchServer() {
-        const s = document.getElementById('serverSelect').value;
-        const type = currentItem.title ? 'movie' : 'tv';
-        let url = (s === 'vidsrc') ? `https://vidsrc.to/embed/${type}/${currentItem.id}` : (s === 'vidsrc_cc') ? `https://vidsrc.cc/v2/embed/${type}/${currentItem.id}` : `https://embed.su/embed/${type}/${currentItem.id}`;
-        if(type === 'tv') url += `/${selectedS}/${selectedE}`;
-        document.getElementById('mainIframe').src = url;
+    // ميزة تكملة المشاهدة: حفظ آخر عنصر تم فتحه مع تفاصيله
+    const lastWatched = {
+        ...currentItem,
+        s: selectedS,
+        e: selectedE,
+        time: new Date().getTime()
+    };
+    localStorage.setItem('monoflix_last', JSON.stringify(lastWatched));
+    
+    document.getElementById('videoLayer').style.display = 'flex';
+    switchServer();
+    showContinueWatching(); // تحديث العرض في الصفحة الرئيسية
+}
+
+// وظيفة لعرض القسم في الصفحة الرئيسية
+function showContinueWatching() {
+    const last = JSON.parse(localStorage.getItem('monoflix_last'));
+    const container = document.getElementById('continueGrid');
+    const title = document.getElementById('continueTitle');
+
+    if (last) {
+        title.style.display = 'block';
+        container.style.display = 'flex';
+        const info = last.title ? '' : ` - S${last.s} E${last.e}`;
+        container.innerHTML = `
+            <div class="btn-nav active" onclick='showDetails(${JSON.stringify(last).replace(/'/g, "&apos;")})' style="background: linear-gradient(90deg, #e50914, #000);">
+                ▶ استكمال: ${last.title || last.name}${info}
+            </div>
+        `;
+    }
+}
+
+// استدعاء الوظيفة عند تحميل الصفحة
+window.onload = () => { 
+    applyLang(); 
+    loadMovies(); 
+    showContinueWatching(); 
+};
+function showContinueWatching() {
+    const last = JSON.parse(localStorage.getItem('monoflix_last'));
+    const container = document.getElementById('continueGrid');
+    const title = document.getElementById('continueTitle');
+
+    if (last && container && title) {
+        title.style.display = 'block';
+        container.style.display = 'flex';
+        const info = last.title ? '' : ` - S${last.s} E${last.e}`;
+        container.innerHTML = `
+            <div class="btn-nav active" onclick='showDetails(${JSON.stringify(last).replace(/'/g, "&apos;")})' style="background: linear-gradient(90deg, #e50914, #000); border: 1px solid var(--red);">
+                ▶ استكمال: ${last.title || last.name}${info}
+            </div>
+        `;
+    }
+}
+
+   function switchServer() {
+    const s = document.getElementById('serverSelect').value;
+    const type = currentItem.title ? 'movie' : 'tv';
+    const id = currentItem.id;
+    let url = "";
+
+    switch(s) {
+        case 'vidsrc_pro':
+            url = `https://vidsrc.pro/embed/${type}/${id}`;
+            if(type === 'tv') url += `/${selectedS}/${selectedE}`;
+            break;
+            
+        case 'vidbinge':
+            url = `https://vidbinge.dev/embed/${type}/${id}`;
+            if(type === 'tv') url += `/${selectedS}/${selectedE}`;
+            break;
+
+        case 'vidsrc_to':
+            url = `https://vidsrc.to/embed/${type}/${id}`;
+            if(type === 'tv') url += `/${selectedS}/${selectedE}`;
+            break;
+
+        case 'superembed':
+            url = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
+            if(type === 'tv') url += `&s=${selectedS}&e=${selectedE}`;
+            break;
+            
+        default:
+            url = `https://vidsrc.pro/embed/${type}/${id}`;
     }
 
+    document.getElementById('mainIframe').src = url;
+}
     function downloadNow() {
         const name = currentItem.title || currentItem.name;
         window.open(`https://www.google.com/search?q=تحميل+${encodeURIComponent(name)}+direct+link`, '_blank');

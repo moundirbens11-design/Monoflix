@@ -158,8 +158,7 @@
 
 function applyLang() {
     const texts = uiTexts[currentLang];
-    
-    // فحص وجود العناصر قبل تعديلها لمنع توقف الكود
+    // أضف "if" قبل كل سطر للتأكد من وجود العنصر
     if(document.getElementById('searchInput')) document.getElementById('searchInput').placeholder = texts.search;
     if(document.getElementById('navAll')) document.getElementById('navAll').innerText = texts.navAll;
     if(document.getElementById('navPopular')) document.getElementById('navPopular').innerText = texts.navPopular;
@@ -169,13 +168,10 @@ function applyLang() {
     if(document.getElementById('txtEpisode')) document.getElementById('txtEpisode').innerText = texts.txtEpisode;
     if(document.getElementById('txtWatch')) document.getElementById('txtWatch').innerText = texts.txtWatch;
     if(document.getElementById('txtSimilar')) document.getElementById('txtSimilar').innerText = texts.txtSimilar;
-
-    // تم حذف سطر txtDown لأنه لم يعد موجوداً في الـ HTML الخاص بك
     
     if(document.getElementById('langToggle')) document.getElementById('langToggle').value = currentLang;
     if(document.getElementById('mainHtml')) document.getElementById('mainHtml').dir = currentLang === 'ar-SA' ? 'rtl' : 'ltr';
 }
-
     async function loadMovies(append = false) {
         if (isFetching || currentGenre === 'watchlist' || currentGenre === 'history') return;
         isFetching = true;
@@ -264,22 +260,6 @@ function applyLang() {
 }
 
 // وظيفة لعرض القسم في الصفحة الرئيسية
-function showContinueWatching() {
-    const last = JSON.parse(localStorage.getItem('monoflix_last'));
-    const container = document.getElementById('continueGrid');
-    const title = document.getElementById('continueTitle');
-
-    if (last) {
-        title.style.display = 'block';
-        container.style.display = 'flex';
-        const info = last.title ? '' : ` - S${last.s} E${last.e}`;
-        container.innerHTML = `
-            <div class="btn-nav active" onclick='showDetails(${JSON.stringify(last).replace(/'/g, "&apos;")})' style="background: linear-gradient(90deg, #e50914, #000);">
-                ▶ استكمال: ${last.title || last.name}${info}
-            </div>
-        `;
-    }
-}
 
 
 function showContinueWatching() {
@@ -304,42 +284,55 @@ function showContinueWatching() {
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
     
+    // جلب رقم الموسم والحلقة (إذا لم يوجد نضع 1 كقيمة افتراضية)
     const sNum = typeof selectedS !== 'undefined' ? selectedS : 1;
     const eNum = typeof selectedE !== 'undefined' ? selectedE : 1;
     
     let url = "";
 
     switch(s) {
-        case 'vidsrc_pro':
+        case 'vidsrc_pro': // Server 1
             url = `https://vidsrc.pro/embed/${type}/${id}`;
             if(type === 'tv') url += `/${sNum}/${eNum}`;
             break;
-        case 'vidbinge':
+
+        case 'vidbinge': // Server 2
             url = `https://vidbinge.dev/embed/${type}/${id}`;
             if(type === 'tv') url += `/${sNum}/${eNum}`;
             break;
-        case 'vidsrc_to':
+
+        case 'vidsrc_to': // Server 3
             url = `https://vidsrc.to/embed/${type}/${id}`;
             if(type === 'tv') url += `/${sNum}/${eNum}`;
             break;
-        case 'superembed':
+
+        case 'superembed': // Server 4
             url = `https://multiembed.mov/?video_id=${id}&tmdb=1`;
             if(type === 'tv') url += `&s=${sNum}&e=${eNum}`;
             break;
+
         default:
             url = `https://vidsrc.pro/embed/${type}/${id}`;
             if(type === 'tv') url += `/${sNum}/${eNum}`;
     }
 
-    // هذا هو السطر الصحيح لتحديث المشغل
+    // تحديث المشغل (تأكد أن الـ id هو mainIframe كما في الـ HTML لديك)
     const player = document.getElementById('mainIframe');
-    if(player) player.src = url;
-}
-
-    function downloadNow() {
-        const name = currentItem.title || currentItem.name;
-        window.open(`https://www.google.com/search?q=تحميل+${encodeURIComponent(name)}+direct+link`, '_blank');
+    if(player) {
+        player.src = url;
     }
+}
+   function downloadNow() {
+    const id = currentItem.id;
+    const type = currentItem.title ? 'movie' : 'tv';
+    
+    // استخدام موقع يوفر روابط تحميل مباشرة بناءً على ID الفيلم
+    // يمكنك استخدام vidsrc.pro/download أو أي خدمة تحميل أخرى
+    const downloadUrl = `https://vidsrc.pro/embed/${type}/${id}`;
+    
+    // فتح الرابط في نافذة جديدة
+    window.open(downloadUrl, '_blank');
+}
 
     function toggleWatchlist() {
         const idx = watchlist.findIndex(f => f.id === currentItem.id);
@@ -367,6 +360,23 @@ function showContinueWatching() {
         const data = await res.json();
         render(data.results, false);
     };
+   function copyLink() {
+    const link = window.location.href;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(link).then(() => {
+            alert("تم نسخ رابط الموقع بنجاح!");
+        });
+    } else {
+        // حل بديل للمتصفحات القديمة
+        const input = document.createElement('input');
+        input.value = link;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+        alert("تم نسخ رابط الموقع بنجاح!");
+    }
+}
 
    window.onscroll = () => { 
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800 && !isFetching && currentGenre !== 'watchlist' && currentGenre !== 'history') { 

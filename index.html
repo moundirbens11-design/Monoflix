@@ -277,12 +277,7 @@ function showContinueWatching() {
     }
 }
 
-// استدعاء الوظيفة عند تحميل الصفحة
-window.onload = () => { 
-    applyLang(); 
-    loadMovies(); 
-    showContinueWatching(); 
-};
+
 function showContinueWatching() {
     const last = JSON.parse(localStorage.getItem('monoflix_last'));
     const container = document.getElementById('continueGrid');
@@ -367,6 +362,12 @@ function showContinueWatching() {
 
     window.onscroll = () => { if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800 && !isFetching && currentGenre !== 'watchlist' && currentGenre !== 'history') { currentPage++; loadMovies(true); } };
     window.onload = () => { applyLang(); loadMovies(); };
+    // استدعاء الوظيفة عند تحميل الصفحة
+ window.onload= () => { 
+    applyLang(); 
+    loadMovies(); 
+    showContinueWatching(); 
+};
 </script>
 </body>
 </html>

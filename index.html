@@ -156,21 +156,25 @@
         'en-US': { search: 'Search...', navAll: '🔥 All', navPopular: '🔝 Trending', navFav: '❤️ Favorites', navHist: '🕒 History', txtSeason: 'Seasons:', txtEpisode: 'Episodes:', txtWatch: 'Watch', txtDown: 'Download', txtSimilar: 'Similar Content' }
     };
 
-    function applyLang() {
-        const texts = uiTexts[currentLang];
-        document.getElementById('searchInput').placeholder = texts.search;
-        document.getElementById('navAll').innerText = texts.navAll;
-        document.getElementById('navPopular').innerText = texts.navPopular;
-        document.getElementById('navFav').innerText = texts.navFav;
-        document.getElementById('navHist').innerText = texts.navHist;
-        document.getElementById('txtSeason').innerText = texts.txtSeason;
-        document.getElementById('txtEpisode').innerText = texts.txtEpisode;
-        document.getElementById('txtWatch').innerText = texts.txtWatch;
-        document.getElementById('txtDown').innerText = texts.txtDown;
-        document.getElementById('txtSimilar').innerText = texts.txtSimilar;
-        document.getElementById('langToggle').value = currentLang;
-        document.getElementById('mainHtml').dir = currentLang === 'ar-SA' ? 'rtl' : 'ltr';
-    }
+function applyLang() {
+    const texts = uiTexts[currentLang];
+    
+    // فحص وجود العناصر قبل تعديلها لمنع توقف الكود
+    if(document.getElementById('searchInput')) document.getElementById('searchInput').placeholder = texts.search;
+    if(document.getElementById('navAll')) document.getElementById('navAll').innerText = texts.navAll;
+    if(document.getElementById('navPopular')) document.getElementById('navPopular').innerText = texts.navPopular;
+    if(document.getElementById('navFav')) document.getElementById('navFav').innerText = texts.navFav;
+    if(document.getElementById('navHist')) document.getElementById('navHist').innerText = texts.navHist;
+    if(document.getElementById('txtSeason')) document.getElementById('txtSeason').innerText = texts.txtSeason;
+    if(document.getElementById('txtEpisode')) document.getElementById('txtEpisode').innerText = texts.txtEpisode;
+    if(document.getElementById('txtWatch')) document.getElementById('txtWatch').innerText = texts.txtWatch;
+    if(document.getElementById('txtSimilar')) document.getElementById('txtSimilar').innerText = texts.txtSimilar;
+
+    // تم حذف سطر txtDown لأنه لم يعد موجوداً في الـ HTML الخاص بك
+    
+    if(document.getElementById('langToggle')) document.getElementById('langToggle').value = currentLang;
+    if(document.getElementById('mainHtml')) document.getElementById('mainHtml').dir = currentLang === 'ar-SA' ? 'rtl' : 'ltr';
+}
 
     async function loadMovies(append = false) {
         if (isFetching || currentGenre === 'watchlist' || currentGenre === 'history') return;

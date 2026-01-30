@@ -127,10 +127,10 @@
 <div id="videoLayer">
     <div class="player-header">
    <select id="serverSelect" onchange="switchServer()">
-    <option value="vidsrc_me">السيرفر السريع (Vidsrc.me)</option>
-    <option value="autoembed">سيرفر التخطي (AutoEmbed)</option>
-    <option value="vidlink">سيرفر الجودة العالية (VidLink)</option>
-    <option value="embed_su">سيرفر المحترفين (VIP)</option>
+    <option value="vidsrc_me">السيرفر السريع (Vidsrc)</option>
+    <option value="vidsrc_in">سيرفر التخطي الجديد (Vidsrc.in)</option>
+    <option value="superembed">سيرفر العرض المباشر (Multi)</option>
+    <option value="smashy">سيرفر بديل (Smashy)</option>
     <option value="2embed">سيرفر احتياطي (2Embed)</option>
 </select>
         <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold; background:rgba(229,9,20,0.1); padding:8px 15px; border-radius:8px;">✕ إغلاق</span>
@@ -279,27 +279,27 @@ function switchServer() {
     let url = '';
 
     switch(sVal) {
-        // السيرفر الأكثر استقراراً حالياً
+        // السيرفر الأول (شغال عندك)
         case 'vidsrc_me': 
             url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv' ? `&season=${s}&episode=${e}` : ''}`;
             break;
 
-        // نسخة جديدة من AutoEmbed تعمل بنظام Mirror
-        case 'autoembed': 
-            url = `https://player.autoembed.cc/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
+        // بديل جديد وقوي جداً (غالباً لا يُحجب)
+        case 'vidsrc_in': 
+            url = `https://vidsrc.in/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
             break;
 
-        // تحديث رابط VidLink (أحياناً يحتاج لـ vip بدلاً من pro)
-        case 'vidlink':
-            url = `https://vidlink.pro/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}?primaryColor=e50914`;
+        // سيرفر SuperEmbed - مستقر جداً
+        case 'superembed': 
+            url = `https://multiembed.mov/?video_id=${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}&tmdb=1`;
             break;
 
-        // سيرفر Vidsrc.cc (بديل قوي جداً لـ embed.su المحجوب عندك)
-        case 'vidsrc_cc': 
-            url = `https://vidsrc.cc/v2/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
+        // سيرفر SmashyStream - بديل احترافي
+        case 'smashy':
+            url = `https://embed.smashystream.com/playere.php?tmdb=${id}${type==='tv' ? `&season=${s}&episode=${e}` : ''}`;
             break;
-            
-        // سيرفر 2embed الرسمي المحدث
+
+        // السيرفر الأخير (شغال عندك)
         case '2embed': 
             url = `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}`;
             break;
@@ -308,7 +308,6 @@ function switchServer() {
     const iframe = document.getElementById('mainIframe');
     if (iframe) {
         iframe.src = url;
-        console.log("Loading URL: " + url);
     }
 }
 function downloadNow() {

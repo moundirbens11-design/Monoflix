@@ -276,28 +276,32 @@ function switchServer() {
     const id = currentItem.id;
     const s = selectedS || 1;
     const e = selectedE || 1;
-    const server = document.getElementById('serverSelect').value;
+    const sVal = document.getElementById('serverSelect').value;
     let url = '';
 
-    switch(server) {
-        case 'autoembed':
-            url = `https://player.autoembed.cc/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
+    // سيرفرات محدثة لعام 2026 لتجنب رسالة "Unavailable"
+    switch(sVal) {
+        case 'vidsrc_me': 
+            url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv' ? `&season=${s}&episode=${e}` : ''}`;
             break;
-
-        case '2embed':
-            url = `https://www.2embed.cc/embed/${id}${type==='tv'?`&s=${s}&e=${e}`:''}`;
+        case 'autoembed': 
+            // هذا السيرفر حالياً هو الأقوى في تخطي الحجب الجغرافي
+            url = `https://player.autoembed.cc/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
             break;
-
-        case 'embedsmash':
-            url = `https://embedsmash.com/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
+        case 'vidsrc_xyz': 
+            url = `https://vidsrc.xyz/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
             break;
-
-        case 'vidsrc_to':
-            url = `https://vidsrc.to/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
+        case '2embed': 
+            url = `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}`;
+            break;
+        case 'embed_su': 
+            // سيرفر احتياطي قوي جداً (Backup)
+            url = `https://embed.su/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
             break;
     }
 
-    document.getElementById('mainIframe').src = url;
+    const iframe = document.getElementById('mainIframe');
+    iframe.src = url;
 }
 
 function downloadNow() {

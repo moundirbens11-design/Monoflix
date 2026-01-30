@@ -126,12 +126,13 @@
 
 <div id="videoLayer">
     <div class="player-header">
-        <select id="serverSelect" onchange="switchServer()" style="background:#222; color:white; padding:7px; border-radius:8px;">
-            <option value="vidsrc_cc">Server 1 (Fast - vidsrc.cc ⚡)</option>
-<option value="multiembed">Server 2 (multiembed.mov ✨)</option>
-<option value="twoembed">Server 3 (2embed.to 🎬)</option>
+       <select id="serverSelect" onchange="switchServer()">
+    <option value="vidsrc">Server 1 — VidSrc</option>
+    <option value="superembed">Server 2 — SuperEmbed</option>
+    <option value="cinemaos">Server 3 — Cinemaos</option>
+    <option value="iembed">Server 4 — iEmbed.top</option>
+</select>
 
-        </select>
         <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold; background:rgba(229,9,20,0.1); padding:8px 15px; border-radius:8px;">✕ إغلاق</span>
     </div>
     <iframe id="mainIframe" allowfullscreen referrerpolicy="origin" 
@@ -271,38 +272,65 @@
         }
     }
 
-   function switchServer() {
-    const s = document.getElementById('serverSelect').value;
+ function switchServer() {
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
-    const sNum = selectedS || 1;
-    const eNum = selectedE || 1;
-    let url = "";
+    const season = selectedS || 1;
+    const episode = selectedE || 1;
+    const s = document.getElementById('serverSelect').value;
+    let url = '';
 
-    if (s === 'vidsrc_cc') {
-        url = `https://vidsrc.cc/v2/embed/${type}/${id}`;
+    if (s === 'vidsrc') {
+        // تحديث هنا: إضافة الموسم والحلقة إذا كان المحتوى مسلسل (tv)
+        url = type === 'movie' 
+            ? `https://vidsrc.cc/v2/embed/movie/${id}` 
+            : `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}`;
     } 
-    else if (s === 'multiembed') {
-        url = `https://multiembed.mov/?video_id=${id}`;
+    else if (s === 'superembed') {
+        url = type === 'movie'
+            ? `https://multiembed.mov/?video_id=${id}&tmdb=1`
+            : `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
     } 
-    else if (s === 'twoembed') {
-        if (type === 'movie') {
-            url = `https://www.2embed.to/embed/tmdb/movie?id=${id}`;
-        } else {
-            url = `https://www.2embed.to/embed/tmdb/tv?id=${id}&s=${sNum}&e=${eNum}`;
-        }
+    else if (s === 'cinemaos') {
+        url = type === 'movie'
+            ? `https://cinemaos.tech/player/${id}`
+            : `https://cinemaos.tech/player/${id}/${season}/${episode}`;
+    } 
+    else if (s === 'iembed') {
+        url = type === 'movie'
+            ? `https://iembed.top/embed/movie/${id}`
+            : `https://iembed.top/embed/tv/${id}/${season}/${episode}`;
     }
 
     document.getElementById('mainIframe').src = url;
 }
+function downloadNow() {
+    const type = currentItem.title ? 'movie' : 'tv';
+    const id = currentItem.id;
+    const season = selectedS || 1;
+    const episode = selectedE || 1;
 
+    // مصفوفة تحتوي على أفضل سيرفرات التحميل والمشاهدة الخارجية
+    const downloadSources = [
+        type === 'movie' 
+            ? `https://vidsrc.xyz/embed/movie/${id}` 
+            : `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`,
+            
+        type === 'movie'
+            ? `https://vidsrc.pro/embed/movie/${id}`
+            : `https://vidsrc.pro/embed/tv/${id}/${season}/${episode}`,
+            
+        type === 'movie'
+            ? `https://vidsrc.to/embed/movie/${id}`
+            : `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`
+    ];
 
-    function downloadNow() {
-        const id = currentItem.id;
-        const type = currentItem.title ? 'movie' : 'tv';
-       window.open(`https://vidsrc.cc/v2/embed/${type}/${id}`, '_blank');
+    // خيار 1: فتح السيرفر الأول مباشرة (الأفضل حالياً)
+    window.open(downloadSources[0], '_blank');
 
-    }
+    // خيار 2 (اختياري): إذا أردت تنبيه المستخدم بوجود مصادر أخرى
+    console.log("مصادر بديلة للتحميل:", downloadSources);
+}
 
     function toggleWatchlist() {
         const idx = watchlist.findIndex(f => f.id === currentItem.id);

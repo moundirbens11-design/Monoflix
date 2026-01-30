@@ -279,36 +279,38 @@ function switchServer() {
     let url = '';
 
     switch(sVal) {
-        // السيرفر الذهبي حالياً - سريع جداً ويدعم الترجمة التلقائية
+        // السيرفر الأكثر استقراراً حالياً
         case 'vidsrc_me': 
             url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv' ? `&season=${s}&episode=${e}` : ''}`;
             break;
 
-        // الأفضل لتخطي الحجب في الدول العربية (AutoEmbed الجديد)
+        // نسخة جديدة من AutoEmbed تعمل بنظام Mirror
         case 'autoembed': 
             url = `https://player.autoembed.cc/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
             break;
 
-        // سيرفر VIDLINK - مستقر جداً ونادراً ما يتوقف
+        // تحديث رابط VidLink (أحياناً يحتاج لـ vip بدلاً من pro)
         case 'vidlink':
-            url = `https://vidlink.pro/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
+            url = `https://vidlink.pro/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}?primaryColor=e50914`;
             break;
 
-        // سيرفر VIP (المعروف بـ Embed.su) - يتميز بجودات متعددة
-        case 'embed_su': 
-            url = `https://embed.su/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
+        // سيرفر Vidsrc.cc (بديل قوي جداً لـ embed.su المحجوب عندك)
+        case 'vidsrc_cc': 
+            url = `https://vidsrc.cc/v2/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
             break;
-
-        // سيرفر 2EMBED - الخيار الأخير والقديم المتجدد
+            
+        // سيرفر 2embed الرسمي المحدث
         case '2embed': 
             url = `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}`;
             break;
     }
 
     const iframe = document.getElementById('mainIframe');
-    iframe.src = url;
+    if (iframe) {
+        iframe.src = url;
+        console.log("Loading URL: " + url);
+    }
 }
-
 function downloadNow() {
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;

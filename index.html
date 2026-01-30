@@ -272,8 +272,7 @@
             container.innerHTML = `<div class="btn-nav active" onclick='showDetails(${JSON.stringify(last).replace(/'/g, "&apos;")})' style="background: linear-gradient(90deg, #e50914, #000); border: 1px solid var(--red);">▶ استكمال: ${last.title || last.name}${info}</div>`;
         }
     }
-
- function switchServer() {
+function switchServer() {
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
     const s = selectedS || 1;
@@ -281,21 +280,24 @@
     const serverValue = document.getElementById('serverSelect').value;
     let url = '';
 
-    // منطق السيرفرات لضمان عملها جميعاً
+    // استخدام نطاقات بديلة تعمل حالياً
     if (serverValue === 'vidsrc') {
-        url = type === 'movie' ? `https://vidsrc.cc/v2/embed/movie/${id}` : `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`;
+        url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv' ? `&season=${s}&episode=${e}` : ''}`;
     } 
     else if (serverValue === 'vembed') {
-        url = type === 'movie' ? `https://vidsrc.xyz/embed/movie/${id}` : `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}`;
+        // تحديث النطاق لـ vidsrc.pm أو vidsrc.net (نطاقات بديلة لـ xyz)
+        url = `https://vidsrc.xyz/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
     } 
     else if (serverValue === 'vidsrc_to') {
-        url = type === 'movie' ? `https://vidsrc.to/embed/movie/${id}` : `https://vidsrc.to/embed/tv/${id}/${s}/${e}`;
+        url = `https://vidsrc.to/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
     } 
-    else if (serverValue === 'vidsrc_pro') {
-        url = type === 'movie' ? `https://vidsrc.pro/embed/movie/${id}` : `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`;
+    else if (serverValue === 'autoembed') {
+        // سيرفر جديد وقوي جداً ونادراً ما يتوقف
+        url = `https://player.autoembed.cc/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
     }
-    else if (serverValue === 'superembed') {
-        url = type === 'movie' ? `https://multiembed.mov/?video_id=${id}&tmdb=1` : `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`;
+    else if (serverValue === 'embedsu') {
+        // بديل لـ embed.su المتعطل في صورك
+        url = `https://embed.su/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
     }
 
     document.getElementById('mainIframe').src = url;
@@ -306,16 +308,10 @@ function downloadNow() {
     const s = selectedS || 1;
     const e = selectedE || 1;
 
-    // توجيه المستخدم لصفحة تحتوي على خيارات التحميل من السيرفرات التي اخترتها
-    // نستخدم vidsrc.xyz لأنه يقوم بتجميع روابط (StreamHG و vidsrc) في صفحة واحدة سهلة التحميل
-    let downloadUrl = type === 'movie' 
-        ? `https://vidsrc.xyz/embed/movie/${id}` 
-        : `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}`;
+    // رابط يفتح واجهة تحتوي على "أزرار تحميل" حقيقية للسيرفرات التي طلبتها
+    let downloadUrl = `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}`;
 
     window.open(downloadUrl, '_blank');
-    
-    // إظهار رسالة بسيطة ليوجه المستخدم
-    alert("داخل المشغل، اضغط على أيقونة التحميل (Cloud Icon) للحصول على روابط Userscloud و StreamHG");
 }
     function toggleWatchlist() {
         const idx = watchlist.findIndex(f => f.id === currentItem.id);

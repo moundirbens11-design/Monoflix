@@ -126,11 +126,12 @@
 
 <div id="videoLayer">
     <div class="player-header">
-       <select id="serverSelect" onchange="switchServer()">
-    <option value="vidsrc">Server 1 — VidSrc</option>
-    <option value="superembed">Server 2 — SuperEmbed</option>
-    <option value="cinemaos">Server 3 — Cinemaos</option>
-    <option value="iembed">Server 4 — iEmbed.top</option>
+      <select id="serverSelect" onchange="switchServer()" style="background:#111; color:white; border:1px solid #333; padding:8px; border-radius:8px; width: 100%;">
+    <option value="vidsrc">Server 1 — VidSrc (Main)</option>
+    <option value="vembed">Server 2 — Vembed (VidSrc.xyz)</option>
+    <option value="vidsrc_to">Server 3 — vidsrc.to</option>
+    <option value="vidsrc_pro">Server 4 — vidsrc.pro</option>
+    <option value="superembed">Server 5 — MultiEmbed</option>
 </select>
 
         <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold; background:rgba(229,9,20,0.1); padding:8px 15px; border-radius:8px;">✕ إغلاق</span>
@@ -275,31 +276,26 @@
  function switchServer() {
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
-    const season = selectedS || 1;
-    const episode = selectedE || 1;
-    const s = document.getElementById('serverSelect').value;
+    const s = selectedS || 1;
+    const e = selectedE || 1;
+    const serverValue = document.getElementById('serverSelect').value;
     let url = '';
 
-    if (s === 'vidsrc') {
-        // تحديث هنا: إضافة الموسم والحلقة إذا كان المحتوى مسلسل (tv)
-        url = type === 'movie' 
-            ? `https://vidsrc.cc/v2/embed/movie/${id}` 
-            : `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}`;
+    // منطق السيرفرات لضمان عملها جميعاً
+    if (serverValue === 'vidsrc') {
+        url = type === 'movie' ? `https://vidsrc.cc/v2/embed/movie/${id}` : `https://vidsrc.cc/v2/embed/tv/${id}/${s}/${e}`;
     } 
-    else if (s === 'superembed') {
-        url = type === 'movie'
-            ? `https://multiembed.mov/?video_id=${id}&tmdb=1`
-            : `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${season}&e=${episode}`;
+    else if (serverValue === 'vembed') {
+        url = type === 'movie' ? `https://vidsrc.xyz/embed/movie/${id}` : `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}`;
     } 
-    else if (s === 'cinemaos') {
-        url = type === 'movie'
-            ? `https://cinemaos.tech/player/${id}`
-            : `https://cinemaos.tech/player/${id}/${season}/${episode}`;
+    else if (serverValue === 'vidsrc_to') {
+        url = type === 'movie' ? `https://vidsrc.to/embed/movie/${id}` : `https://vidsrc.to/embed/tv/${id}/${s}/${e}`;
     } 
-    else if (s === 'iembed') {
-        url = type === 'movie'
-            ? `https://iembed.top/embed/movie/${id}`
-            : `https://iembed.top/embed/tv/${id}/${season}/${episode}`;
+    else if (serverValue === 'vidsrc_pro') {
+        url = type === 'movie' ? `https://vidsrc.pro/embed/movie/${id}` : `https://vidsrc.pro/embed/tv/${id}/${s}/${e}`;
+    }
+    else if (serverValue === 'superembed') {
+        url = type === 'movie' ? `https://multiembed.mov/?video_id=${id}&tmdb=1` : `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`;
     }
 
     document.getElementById('mainIframe').src = url;
@@ -307,31 +303,20 @@
 function downloadNow() {
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
-    const season = selectedS || 1;
-    const episode = selectedE || 1;
+    const s = selectedS || 1;
+    const e = selectedE || 1;
 
-    // مصفوفة تحتوي على أفضل سيرفرات التحميل والمشاهدة الخارجية
-    const downloadSources = [
-        type === 'movie' 
-            ? `https://vidsrc.xyz/embed/movie/${id}` 
-            : `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${season}&episode=${episode}`,
-            
-        type === 'movie'
-            ? `https://vidsrc.pro/embed/movie/${id}`
-            : `https://vidsrc.pro/embed/tv/${id}/${season}/${episode}`,
-            
-        type === 'movie'
-            ? `https://vidsrc.to/embed/movie/${id}`
-            : `https://vidsrc.to/embed/tv/${id}/${season}/${episode}`
-    ];
+    // توجيه المستخدم لصفحة تحتوي على خيارات التحميل من السيرفرات التي اخترتها
+    // نستخدم vidsrc.xyz لأنه يقوم بتجميع روابط (StreamHG و vidsrc) في صفحة واحدة سهلة التحميل
+    let downloadUrl = type === 'movie' 
+        ? `https://vidsrc.xyz/embed/movie/${id}` 
+        : `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}`;
 
-    // خيار 1: فتح السيرفر الأول مباشرة (الأفضل حالياً)
-    window.open(downloadSources[0], '_blank');
-
-    // خيار 2 (اختياري): إذا أردت تنبيه المستخدم بوجود مصادر أخرى
-    console.log("مصادر بديلة للتحميل:", downloadSources);
+    window.open(downloadUrl, '_blank');
+    
+    // إظهار رسالة بسيطة ليوجه المستخدم
+    alert("داخل المشغل، اضغط على أيقونة التحميل (Cloud Icon) للحصول على روابط Userscloud و StreamHG");
 }
-
     function toggleWatchlist() {
         const idx = watchlist.findIndex(f => f.id === currentItem.id);
         if(idx === -1) { watchlist.push(currentItem); document.getElementById('favBtn').innerText = "✅"; }

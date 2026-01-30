@@ -126,17 +126,16 @@
 
 <div id="videoLayer">
     <div class="player-header">
-    <select id="serverSelect" onchange="switchServer()" style="background:#111;color:white;border:1px solid #333;padding:10px;border-radius:8px;width:100%;font-weight:bold;">
-    <option value="autoembed">Server 1 — AutoEmbed (Fast)</option>
-    <option value="2embed">Server 2 — 2Embed (Download)</option>
-    <option value="embedsmash">Server 3 — EmbedSmash</option>
-    <option value="vidsrc_to">Server 4 — Vidsrc.to (Backup)</option>
+   <select id="serverSelect" onchange="switchServer()">
+    <option value="vidsrc_me">السيرفر السريع (Vidsrc.me)</option>
+    <option value="autoembed">سيرفر التخطي (AutoEmbed)</option>
+    <option value="vidlink">سيرفر الجودة العالية (VidLink)</option>
+    <option value="embed_su">سيرفر المحترفين (VIP)</option>
+    <option value="2embed">سيرفر احتياطي (2Embed)</option>
 </select>
-
         <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold; background:rgba(229,9,20,0.1); padding:8px 15px; border-radius:8px;">✕ إغلاق</span>
     </div>
-    <iframe id="mainIframe" allowfullscreen referrerpolicy="origin" 
-            sandbox="allow-forms allow-scripts allow-same-origin allow-presentation allow-pointer-lock"></iframe>
+   <iframe id="mainIframe" allowfullscreen referrerpolicy="origin"></iframe>
 </div>
 
 <footer>
@@ -279,24 +278,30 @@ function switchServer() {
     const sVal = document.getElementById('serverSelect').value;
     let url = '';
 
-    // سيرفرات محدثة لعام 2026 لتجنب رسالة "Unavailable"
     switch(sVal) {
+        // السيرفر الذهبي حالياً - سريع جداً ويدعم الترجمة التلقائية
         case 'vidsrc_me': 
             url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv' ? `&season=${s}&episode=${e}` : ''}`;
             break;
+
+        // الأفضل لتخطي الحجب في الدول العربية (AutoEmbed الجديد)
         case 'autoembed': 
-            // هذا السيرفر حالياً هو الأقوى في تخطي الحجب الجغرافي
             url = `https://player.autoembed.cc/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
             break;
-        case 'vidsrc_xyz': 
-            url = `https://vidsrc.xyz/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
+
+        // سيرفر VIDLINK - مستقر جداً ونادراً ما يتوقف
+        case 'vidlink':
+            url = `https://vidlink.pro/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
             break;
+
+        // سيرفر VIP (المعروف بـ Embed.su) - يتميز بجودات متعددة
+        case 'embed_su': 
+            url = `https://embed.su/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
+            break;
+
+        // سيرفر 2EMBED - الخيار الأخير والقديم المتجدد
         case '2embed': 
             url = `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}`;
-            break;
-        case 'embed_su': 
-            // سيرفر احتياطي قوي جداً (Backup)
-            url = `https://embed.su/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
             break;
     }
 

@@ -126,13 +126,13 @@
 
 <div id="videoLayer">
     <div class="player-header">
-     <select id="serverSelect" onchange="switchServer()" style="background:#111; color:white; border:1px solid #333; padding:10px; border-radius:8px; width:100%; font-weight:bold;">
-    <option value="vidsrc_me">Server 1 — Stream (Main - Fast)</option>
-    <option value="autoembed">Server 2 — AutoEmbed (No Ads)</option>
-    <option value="vidsrc_xyz">Server 3 — Vembed (Stable)</option>
-    <option value="2embed">Server 4 — 2Embed (Multi)</option>
-    <option value="embed_su">Server 5 — Backup Server</option>
+    <select id="serverSelect" onchange="switchServer()" style="background:#111;color:white;border:1px solid #333;padding:10px;border-radius:8px;width:100%;font-weight:bold;">
+    <option value="autoembed">Server 1 — AutoEmbed (Fast)</option>
+    <option value="2embed">Server 2 — 2Embed (Download)</option>
+    <option value="embedsmash">Server 3 — EmbedSmash</option>
+    <option value="vidsrc_to">Server 4 — Vidsrc.to (Backup)</option>
 </select>
+
         <span onclick="closeModal('videoLayer')" style="color:var(--red); cursor:pointer; font-weight:bold; background:rgba(229,9,20,0.1); padding:8px 15px; border-radius:8px;">✕ إغلاق</span>
     </div>
     <iframe id="mainIframe" allowfullscreen referrerpolicy="origin" 
@@ -276,36 +276,30 @@ function switchServer() {
     const id = currentItem.id;
     const s = selectedS || 1;
     const e = selectedE || 1;
-    const sVal = document.getElementById('serverSelect').value;
+    const server = document.getElementById('serverSelect').value;
     let url = '';
 
-    // السيرفرات التي تم اختيارها بناءً على استقرارها حالياً
-    switch(sVal) {
-        case 'vidsrc_me': // بديل قوي جداً ونادراً ما يُحظر
-            url = `https://vidsrc.me/embed/${type}?tmdb=${id}${type==='tv' ? `&season=${s}&episode=${e}` : ''}`;
+    switch(server) {
+        case 'autoembed':
+            url = `https://player.autoembed.cc/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
             break;
-        case 'autoembed': // سيرفر جديد يتخطى أغلب مشاكل "Unavailable"
-            url = `https://player.autoembed.cc/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
+
+        case '2embed':
+            url = `https://www.2embed.cc/embed/${id}${type==='tv'?`&s=${s}&e=${e}`:''}`;
             break;
-        case 'vidsrc_xyz': // النسخة المستقرة من Vembed
-            url = `https://vidsrc.xyz/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
+
+        case 'embedsmash':
+            url = `https://embedsmash.com/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
             break;
-        case '2embed': // السيرفر الذي يحتوي على قائمة التحميل (StreamHG و Userscloud)
-            url = `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}`;
-            break;
-        case 'embed_su': // بديل لـ vidsrc.to المتعطل في صورك
-            url = `https://embed.su/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}`;
+
+        case 'vidsrc_to':
+            url = `https://vidsrc.to/embed/${type}/${id}${type==='tv'?`/${s}/${e}`:''}`;
             break;
     }
 
-    // إضافة مستمع للأخطاء (إذا فشل السيرفر يظهر تنبيه للمستخدم)
-    const iframe = document.getElementById('mainIframe');
-    iframe.src = url;
-    
-    // ملاحظة: الـ iframes لا تسمح دائماً بكشف الأخطاء من النطاقات الخارجية
-    // ولكن سنقوم بتذكير المستخدم بتجربة سيرفر آخر إذا لم يعمل المشغل
-    console.log("جارٍ التحميل من: " + url);
+    document.getElementById('mainIframe').src = url;
 }
+
 function downloadNow() {
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;

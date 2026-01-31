@@ -136,6 +136,55 @@
     /* تصغير شريط البحث قليلاً */
     #searchInput { width: 80px !important; font-size: 11px !important; }
 }
+/* واجهة مدير التحميل */
+.dl-manager {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #0f0f0f;
+    padding: 25px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    z-index: 5000;
+    width: 90%;
+    max-width: 550px;
+    box-shadow: 0 0 30px rgba(0,0,0,1);
+}
+
+.dl-header { color: var(--red); margin-bottom: 20px; font-size: 18px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+
+.dl-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.dl-server {
+    background: #050505;
+    border: 1px solid #222;
+    padding: 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: 0.3s;
+}
+
+.dl-server:hover { border-color: var(--red); background: #111; }
+.dl-server span { font-size: 13px; font-weight: bold; color: #fff; }
+.dl-server small { color: var(--red); font-size: 11px; }
+
+/* زر الإغلاق */
+.dl-close { margin-top: 20px; color: #666; cursor: pointer; font-size: 14px; text-decoration: underline; }
+
+/* للهواتف: جعلها عمود واحد لسهولة النقر */
+@media (max-width: 480px) {
+    .dl-grid { grid-template-columns: 1fr; }
+}
     </style>
 </head>
 <body>
@@ -191,7 +240,7 @@
                 </div>
                 <div style="display:flex; gap:12px; margin-top:25px; flex-wrap: wrap;">
                     <button class="btn-nav active" style="flex:2; background:var(--red); height:45px;" onclick="watchNow()">▶ <span id="txtWatch">مشاهدة</span></button>
-                    <button class="btn-nav" style="flex:1; background:var(--green); border-color:var(--green);" onclick="downloadNow()">⬇️ تحميل</button>
+                  <button class="btn-nav" style="flex:1; background:var(--green); border-color:var(--green);" onclick="openDownloadManager()">⬇️ تحميل</button>
                     <button class="btn-nav" style="flex:1; background:#333; border-color:#444;" onclick="copyLink()">🔗 مشاركة</button>
                     <button class="btn-nav" id="favBtn" onclick="toggleWatchlist()" style="flex:0.5;">❤️</button>
                 </div>
@@ -386,16 +435,43 @@ function switchServer() {
         iframe.src = url;
     }
 }
-function downloadNow() {
+// احذف القديمة وضع هذه مكانها
+function openDownloadManager() {
+    let manager = document.getElementById('dlManager');
+    if(!manager) {
+        manager = document.createElement('div');
+        manager.id = 'dlManager';
+        manager.className = 'dl-manager';
+        document.body.appendChild(manager);
+    }
+
     const type = currentItem.title ? 'movie' : 'tv';
     const id = currentItem.id;
     const s = selectedS || 1;
     const e = selectedE || 1;
 
-    // رابط يفتح واجهة تحتوي على "أزرار تحميل" حقيقية للسيرفرات التي طلبتها
-    let downloadUrl = `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}`;
+    // السيرفرات (روابط جلب التحميل)
+    const servers = [
+        { name: "Luluvdo", quality: "1080p", url: `https://vidsrc.cc/v3/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}` },
+        { name: "Uqload", quality: "720p", url: `https://vidsrc.xyz/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}` },
+        { name: "Userscloud", quality: "480p", url: `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}` },
+        { name: "Upstream", quality: "HD", url: `https://embed.smashystream.com/playere.php?tmdb=${id}${type==='tv' ? `&season=${s}&episode=${e}` : ''}` }
+    ];
 
-    window.open(downloadUrl, '_blank');
+    manager.innerHTML = `
+        <div class="dl-header">🎬 اختر سيرفر التحميل</div>
+        <div class="dl-grid">
+            ${servers.map(srv => `
+                <div class="dl-server" onclick="window.open('${srv.url}', '_blank')">
+                    <span>${srv.name}</span>
+                    <small>⬇️ ${srv.quality}</small>
+                </div>
+            `).join('')}
+        </div>
+        <div class="dl-close" onclick="document.getElementById('dlManager').style.display='none'">إغلاق</div>
+    `;
+    
+    manager.style.display = 'block';
 }
     function toggleWatchlist() {
         const idx = watchlist.findIndex(f => f.id === currentItem.id);

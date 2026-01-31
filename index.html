@@ -451,11 +451,12 @@ function openDownloadManager() {
     const e = selectedE || 1;
 
     // السيرفرات (روابط جلب التحميل)
+  // السيرفرات المحدثة لمحاولة جلب التحميل بشكل أفضل
     const servers = [
-        { name: "Luluvdo", quality: "1080p", url: `https://vidsrc.cc/v3/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}` },
-        { name: "Uqload", quality: "720p", url: `https://vidsrc.xyz/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}` },
-        { name: "Userscloud", quality: "480p", url: `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}` },
-        { name: "Upstream", quality: "HD", url: `https://embed.smashystream.com/playere.php?tmdb=${id}${type==='tv' ? `&season=${s}&episode=${e}` : ''}` }
+        { name: "Direct Download", quality: "1080p", url: `https://vidsrc.cc/v3/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}` },
+        { name: "Uqload Link", quality: "720p", url: `https://vidsrc.xyz/embed/${type}/${id}${type==='tv' ? `/${s}/${e}` : ''}` },
+        { name: "Server VIP", quality: "HD", url: `https://multiembed.mov/?video_id=${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}&tmdb=1` },
+        { name: "Backup DL", quality: "480p", url: `https://www.2embed.cc/embed/${id}${type==='tv' ? `&s=${s}&e=${e}` : ''}` }
     ];
 
     manager.innerHTML = `
